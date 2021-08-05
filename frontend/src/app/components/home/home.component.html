@@ -1,19 +1,39 @@
 <div class="container-fluid p-0 m-0 pt-5">
-    <div class="row col-12 m-0 p-0 pt-5 justify-content-center">
+    <div *ngIf="chargingData" class="text-center pt-5">
+        <div class="spinner-grow text-primary mt-5 m-3" role="status" *ngFor="let repeat of [].constructor(3)"></div>
+    </div>
+    <div class="row col-12 m-0 p-0 pt-5 justify-content-center" *ngIf="!chargingData">
+        <!--ASIDE IZQUIERDO-->
         <div class="col-12 col-md-3 p-1">
             <div class="card shadow">
-                <h1 class="text-center">Aside 1</h1>
+                <div class="row col-12 p-0 m-0 justify-content-center">
+                    <div class="col-12 text-center asideProfileBG">
+                        <img src="https://cdn.zendalibros.com/wp-content/uploads/tommy-shelby-peaky-blinders-serie.jpg" alt="Avatar" class="avatar-md asideProfileImg img-fluid m-1 p-0">
+                    </div>
+                    <div class="col-12 mt-5 text-center">
+                        <p>{{user.username}}</p>
+                    </div>
+                    <hr class="col-8 m-0 p-0">
+                    <div class="col-12">
+                        <ul class="infoProfile text-center p-0 m-0">
+                            <li>Contactos<p>12</p></li>
+                            <li>Visitas<p>12</p></li>
+                            <li>Likes<p>12</p></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
+        <!--CONTENIDO PRINCIPAL-->
         <div class="col-12 col-md-6 p-1">
             <div class="card shadow-sm m-0">
                 <div class="row col-12 p-2 m-0 justify-content-center">
                     <img src="https://cdn.zendalibros.com/wp-content/uploads/tommy-shelby-peaky-blinders-serie.jpg" alt="Avatar" class="avatar img-fluid m-1 p-0">
-                    <button class="col-8 col-lg-10 col-xl-11 btn btn createPostBtn" (click)="showCreatePostModal()">Crear publicación</button>
+                    <button class="col-8 col-lg-10 col-xl-11 btn btn createPostBtn  slide_right" (click)="showCreatePostModal()">Crear publicación</button>
                 </div>
             </div>
             <hr>
-            <div class="pl-5 pr-5">
+            <div class="pl-lg-5 pr-lg-5 p-0">
                 <div class="card shadow m-2" *ngFor="let post of listPost">
                     <img src="{{post.imgURL}}" class="card-img-top img-fluid" alt="{{post.imgURL}}">
                     <div class="card-body">
@@ -22,8 +42,8 @@
                     </div>
                 </div>
             </div>
-            
         </div>
+        <!--ASIDE DERECHO-->
         <div class="col-12 col-md-3 p-1">
             <div class="card shadow">
                 <h1 class="text-center">Aside 2</h1>
@@ -35,6 +55,16 @@
 
 <!--MODAL CREAR PUBLICACIÓN-->
 <p-dialog header="Crear una publicación" position="top" [(visible)]="displayCreatePostModal" [modal]="true" [style]="modalWidth" 
-[baseZIndex]="10000" [draggable]="true" [resizable]="true">
-        
+[baseZIndex]="10000" [draggable]="true" [resizable]="false">
+    <form>
+        <div class="form-group">
+            <input type="text" class="form-control" id="username" placeholder="Título">
+            <textarea class="form-control" rows="4" cols="50" maxlength="200" placeholder="¿Sobre qué quieres hablar?" style="resize: none;"></textarea>
+        </div>
+        <hr>
+        <div class="text-right">
+            <button class="btn btn-info m-1">Cancelar</button>
+            <button class="btn btn-primary m-1">Publicar</button>
+        </div>
+    </form>
 </p-dialog>

@@ -13,8 +13,7 @@ export class AuthGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot){
 
-        const token = this.authSrv.getToken();
-        return this.authSrv.checkToken(token).then( (res:any) => {
+        return this.authSrv.checkToken().then( (res:any) => {
           if(res){
             return true;
           }else{

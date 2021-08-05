@@ -50,11 +50,24 @@ export class AuthService {
     }
   }
 
+  async currentUser(){
+    const token = this.getToken();
+    const headerType = 'x-access-token';
+    const headers = {[headerType]: token};
+    return await this.http.get(`${this.url}/api/auth/profile`, { headers: headers }).toPromise().then( res => {
+      return res;
+    }).catch( error => {
+      return error;
+    });
+  }
 
-  async checkToken(token:string){
+
+  async checkToken(){
+    const token = this.getToken();
     if(token != null && token != undefined && token != ''){
       const headerType = 'x-access-token';
-      return await this.http.get(`${this.url}/api/auth/checkToken`, { headers: {[headerType]: token} }).toPromise().then( res => {
+      const headers = {[headerType]: token};
+      return await this.http.get(`${this.url}/api/auth/checkToken`, { headers: headers }).toPromise().then( res => {
         this.isLoggedIn = true;
         return res;
       }).catch(error => {
@@ -81,9 +94,10 @@ export class AuthService {
 
 
   async getPosts(){
-    const headerType = 'x-access-token';
     const token = this.getToken();
-    return await this.http.get(`${this.url}/api/posts`, { headers: {[headerType]: token} }).toPromise().then( res => {
+    const headerType = 'x-access-token';
+    const headers = {[headerType]: token};
+    return await this.http.get(`${this.url}/api/posts`, { headers: headers }).toPromise().then( res => {
       return res;
     });
   }

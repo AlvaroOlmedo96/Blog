@@ -13,8 +13,7 @@ export class NoLoginGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot){
       
-        const token = this.authSrv.getToken();
-        return this.authSrv.checkToken(token).then( (res:any) => {
+        return this.authSrv.checkToken().then( (res:any) => {
             if(res){
               this.router.navigate(['home']);
               return false;

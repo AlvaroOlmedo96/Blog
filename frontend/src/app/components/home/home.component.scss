@@ -3,4 +3,29 @@
     border-radius: 8px;
     color: rgb(97, 97, 97);
     background-color: rgb(238, 238, 238);
+    transition: 0.25s ease-in-out;
+    font-size: 22px;
+}
+
+.createPostBtn:hover{
+    box-shadow: inset 1000px 0 0 0 rgb(91, 176, 255);
+    color: white;
+    transition: 0.45s ease-in-out;
+}
+
+.asideProfileBG{
+    border-radius: 15px 15px 0px 0px;
+    background-image: url(../../../assets/defaultProfileBg.jpg);
+}
+.asideProfileImg{
+    position: relative;
+    top: 35px;
+}
+
+.infoProfile li{
+    text-align: center;
+    margin: 20px;
+    display: inline-block;
+    text-decoration: none;
+    color: gray;
 }

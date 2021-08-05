@@ -16,6 +16,9 @@
     src: url(assets/fonts/ubuntu/Ubuntu-Medium.ttf);
 }
 
+body{
+    background-color: #f0f2f5;
+}
 
 *{
     font-family: 'Ubuntu-medium';
@@ -45,6 +48,17 @@
     width: 50px;
     height: 50px;
     overflow: hidden;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.avatar-md {
+    vertical-align: middle;
+    position: relative;
+    width: 70px;
+    height: 70px;
+    overflow: hidden;
+    border: 2px solid white;
     border-radius: 50%;
     object-fit: cover;
 }

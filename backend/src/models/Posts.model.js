@@ -5,8 +5,7 @@ const postSchema = new Schema({
     category: String,
     imgURL: String,
     description: String,
-    likes: Number,
-
+    likes: Number
 }, {
     timestamps: true,
     versionKey: false

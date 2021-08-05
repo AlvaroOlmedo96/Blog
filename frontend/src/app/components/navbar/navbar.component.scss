@@ -1,3 +1,7 @@
+.bgWhite{
+    background-color: white;
+}
+
 .inputSearch{
     padding: 10px;
     border:none;
@@ -44,7 +48,7 @@
     transition: 0.25s ease-in-out;
 }
 .profileBtn:hover{
-    background-color: rgba(0, 225, 255, 0.678);
+    background-color: rgba(139, 193, 255, 0.719);
     color: white;
     transition: 0.25s ease-in-out;
 }

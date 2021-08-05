@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HomeComponent } from './home.component';
 import { RouterModule, Routes } from '@angular/router';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import {AvatarModule} from 'primeng/avatar';
 import {AvatarGroupModule} from 'primeng/avatargroup';
@@ -18,6 +19,7 @@ const routes: Routes =[
   imports: [
     RouterModule.forChild(routes),
     CommonModule,
+    FormsModule,
     AvatarModule,
     AvatarGroupModule,
     DialogModule
