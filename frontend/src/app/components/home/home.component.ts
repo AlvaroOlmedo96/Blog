@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -8,20 +9,32 @@ import { AuthService } from 'src/app/services/auth.service';
 })
 export class HomeComponent implements OnInit {
 
-  listPost = [];
+  isBrowser:boolean = false;
 
-  constructor(private authSrv: AuthService) { }
+  listPost = [];
+  displayCreatePostModal:boolean = false;
+  modalWidth = {width: '80vw'};
+  
+  constructor(@Inject(PLATFORM_ID) platformId: Object, private authSrv: AuthService) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
 
   ngOnInit(): void {
+    if(this.isBrowser){this.modalWidth = (window.innerWidth <= 800) ? {width: '90vw'} : {width: '30vw'}};
+
     this.authSrv.getPosts().then( (res:any) => {
       console.log(res);
       this.listPost = res;
     });
   }
+
+  showCreatePostModal(){
+    this.displayCreatePostModal = true;
+  }
  
   createPost(){
-    
+
   }
 
 }

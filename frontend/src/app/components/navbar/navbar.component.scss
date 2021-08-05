@@ -7,5 +7,44 @@
 
 .logoImage{
     padding: 3px;
-    border-radius: 75px;
+    border-radius: 50%;
+}
+
+.iconNavbarItem{
+    font-size: 1rem;
+    position: relative;
+    top: -15px;
+    left: 30px;
+}
+
+.navItem li{
+    transition: 0.25s ease-in-out;
+    cursor: pointer;
+    border-radius: 5px;
+}
+.navItem li:hover{
+    background-color: rgba(139, 193, 255, 0.719);
+    transition: 0.25s ease-in-out;
+    border-radius: 15px;
+}
+.navItem li:hover * {
+    color: white;
+    transition: 0.25s ease-in-out;
+}
+
+.avatarNav{
+    width: 35px;
+    height: 35px;
+    overflow: hidden;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.profileBtn{
+    transition: 0.25s ease-in-out;
+}
+.profileBtn:hover{
+    background-color: rgba(0, 225, 255, 0.678);
+    color: white;
+    transition: 0.25s ease-in-out;
 }

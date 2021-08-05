@@ -14,16 +14,26 @@
         </div>
         <input type="text" class="form-control inputSearch" [(ngModel)]="navbarSearchText" placeholder="Buscar...">
       </div>
-      <ul class="navbar-nav mr-auto">
-        <li class="nav-item active">
-          <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+      <ul class="navbar-nav mr-auto pt-3 p-lg-0 navItem">
+        <li class="nav-item active row text-center p-1 m-1" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}">
+          <i class="pi pi-home col-12 p-0 m-0"></i>
+          <a class="nav-link col-12 p-0 m-0" [routerLink]="['/home']">Home <span class="sr-only">(current)</span></a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Link</a>
+        <li class="nav-item row text-center p-1 m-1" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}">
+          <i class="pi pi-bell col-12 p-0 m-0"></i>
+          <a class="nav-link col-12 p-0 m-0" [routerLink]="['/notifications']">Notificaciones</a>
         </li>
       </ul>
-      <button type="button" pButton pRipple icon="pi pi-cog" class="p-button-secondary p-button-rounded" (click)="menu.toggle($event)"></button>
-      <p-menu #menu [popup]="true" [model]="options"></p-menu>
+      <button class="mr-2 text-center btn profileBtn" [routerLink]="['/profile']">
+        <div class="m-0 p-0 align-middle" style="display: block;">
+          <img src="https://cdn.zendalibros.com/wp-content/uploads/tommy-shelby-peaky-blinders-serie.jpg" alt="Avatar" class="avatarNav img-fluid">
+          <p class="p-0 m-0">Perfil</p>
+        </div>
+      </button>
+      <div class="text-right">
+        <button type="button" pButton pRipple icon="pi pi-cog" class="p-button-secondary p-button-rounded" (click)="menu.toggle($event)"></button>
+        <p-menu #menu [popup]="true" [model]="options" appendTo="body"></p-menu> 
+      </div>
     </div>
 </nav>
 

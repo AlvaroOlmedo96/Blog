@@ -21,6 +21,9 @@
     font-family: 'Ubuntu-medium';
 }
 
+.card{
+    border-radius: 15px;
+}
 
 .appear{
     animation: appearAnim;
@@ -34,4 +37,14 @@
     }to{
         opacity: 1;
     }
+}
+
+.avatar {
+    vertical-align: middle;
+    position: relative;
+    width: 50px;
+    height: 50px;
+    overflow: hidden;
+    border-radius: 50%;
+    object-fit: cover;
 }

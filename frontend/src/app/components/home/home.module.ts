@@ -2,8 +2,10 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HomeComponent } from './home.component';
 import { RouterModule, Routes } from '@angular/router';
+
 import {AvatarModule} from 'primeng/avatar';
 import {AvatarGroupModule} from 'primeng/avatargroup';
+import {DialogModule} from 'primeng/dialog';
 
 const routes: Routes =[
   { path: '', component: HomeComponent }
@@ -17,7 +19,8 @@ const routes: Routes =[
     RouterModule.forChild(routes),
     CommonModule,
     AvatarModule,
-    AvatarGroupModule
+    AvatarGroupModule,
+    DialogModule
   ]
 })
 export class HomeModule { }
