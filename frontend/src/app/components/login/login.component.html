@@ -1,0 +1,60 @@
+<div class="container-fluid p-0 m-0" *ngIf="isBrowser">
+    <header class="mainContainer pt-5">
+        <div class="row col-12 justify-content-center p-0 m-0">
+            <h1 class="col-12 text-primary text-center">BLOG</h1>
+            <!--LOGIN BOX-->
+            <div class="col-11 col-md-8 col-lg-3 card p-5 shadow loginBox">
+                <form [formGroup]="signInForm" (ngSubmit)="signIn()">
+                    <div class="form-group">
+                        <input type="email" class="form-control" id="email" placeholder="Correo electrónico" formControlName="email">
+                        <p-message severity="error" text="{{errors.email_signIn.msg}}" class="appear" *ngIf="errors.email_signIn.error"></p-message>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control" id="password" placeholder="Contraseña" formControlName="password">
+                        <p-message severity="error" text="{{errors.password_signIn.msg}}" class="appear" *ngIf="errors.password_signIn.error"></p-message>
+                    </div>
+                    <button type="submit" class="d-flex align-items-center justify-content-center btn btn-block btn-primary p-2" [disabled]="loadSignIn">
+                        <div class="spinner-border text-light" role="status" style="width: 30px; height: 30px;" *ngIf="loadSignIn"></div>
+                        <span class="ml-1">Entrar</span>
+                    </button>
+                    <p-messages [(value)]="errorReq" [enableService]="false" *ngIf="errorReq[0].status != 0" class="appear"></p-messages>
+                    <hr class="mt-4 mb-4">
+                    <button type="button" class="btn btn-block btn-success p-2" (click)="showModalDialog()">Crear una cuenta nueva</button>
+                </form>
+            </div>
+        </div>
+    </header>
+    
+
+    <p-dialog header="Registrate" [(visible)]="displayModal" [modal]="true" [style]="modalWidth" [baseZIndex]="10000"
+    [draggable]="true" [resizable]="true">
+        <form [formGroup]="signUpForm" (ngSubmit)="signUp()">
+            <div class="form-group">
+                <input type="text" class="form-control" id="username" placeholder="Nombre" formControlName="username">
+                <p-message severity="error" text="{{errors.username_signUp.msg}}" class="appear" *ngIf="errors.username_signUp.error"></p-message>
+            </div>
+            <div class="form-group">
+                <input type="email" class="form-control" id="email" placeholder="Correo electrónico" formControlName="email">
+                <p-message severity="error" text="{{errors.email_signUp.msg}}" class="appear" *ngIf="errors.email_signUp.error"></p-message>
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-control" id="password" placeholder="Contraseña" formControlName="password">
+                <p-message severity="error" text="{{errors.password_signUp.msg}}" class="appear" *ngIf="errors.password_signUp.error"></p-message>
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-control" id="confirm_password" placeholder="Confirma la contraseña" formControlName="c_password">
+                <p-message severity="error" text="{{errors.c_password_signUp.msg}}" class="appear" *ngIf="errors.c_password_signUp.error"></p-message>
+            </div>
+            <small class="font-weight-light text-muted">
+                Al hacer clic en Registrarte, aceptas nuestras Condiciones. Obtén más información sobre cómo recopilamos, 
+                usamos y compartimos tu información en la Política de datos, así como el uso que hacemos de las cookies y tecnologías similares en nuestra Política de cookies. 
+                Es posible que te enviemos notificaciones por SMS que podrás desactivar cuando quieras.
+            </small>
+            <button type="submit" class="d-flex align-items-center justify-content-center btn btn-block btn-success p-2 mt-3" [disabled]="loadSignUp">
+                <div class="spinner-border text-light" role="status" style="width: 30px; height: 30px;" *ngIf="loadSignUp"></div>
+                <span class="ml-1">Crear</span>
+            </button>
+        </form>
+    </p-dialog>
+
+</div>
