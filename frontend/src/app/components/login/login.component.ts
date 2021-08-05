@@ -112,7 +112,7 @@ export class LoginComponent implements OnInit {
           this.errorReq[0].status = 0;
           this.errorReq[0].detail = '';
           this.authSrv.saveToken(res.token);
-          this.router.navigate(['/home']);
+          window.location.reload();//Refresco para que al redireccionar a través del authGuard se recarge el AppComponent y habilite el navbar
         }
         this.loadSignIn = false;
       });

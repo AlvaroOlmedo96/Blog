@@ -6,9 +6,12 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NavbarComponent } from './components/navbar/navbar.component';
-import { AuthService } from './services/auth.service';
 import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 
+import {SplitButtonModule} from 'primeng/splitbutton';
+import { ToastModule } from 'primeng/toast';
+import {MenuModule} from 'primeng/menu';
 
 @NgModule({
   declarations: [
@@ -20,7 +23,11 @@ import { HttpClientModule } from '@angular/common/http';
     BrowserAnimationsModule,
     AppRoutingModule,
     HttpClientModule,
-    NgbModule
+    NgbModule,
+    FormsModule,
+    SplitButtonModule,
+    ToastModule,
+    MenuModule
   ],
   exports: [
   ],
