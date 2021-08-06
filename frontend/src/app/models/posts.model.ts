@@ -3,5 +3,9 @@ export interface Post{
     category?: String,
     imgURL?: String,
     description?: String,
-    likes?: Number
+    propietaryId?: string,
+    propietaryUsername?: string,
+    likes?: Number,
+    comments?: [],
+    createdAt?: Date
 }

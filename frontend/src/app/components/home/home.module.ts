@@ -7,6 +7,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {AvatarModule} from 'primeng/avatar';
 import {AvatarGroupModule} from 'primeng/avatargroup';
 import {DialogModule} from 'primeng/dialog';
+import { ToastModule } from 'primeng/toast';
+import {MenuModule} from 'primeng/menu';
+import {PanelMenuModule} from 'primeng/panelmenu';
 
 const routes: Routes =[
   { path: '', component: HomeComponent }
@@ -22,7 +25,10 @@ const routes: Routes =[
     FormsModule,
     AvatarModule,
     AvatarGroupModule,
-    DialogModule
+    DialogModule,
+    ToastModule,
+    MenuModule,
+    PanelMenuModule
   ]
 })
 export class HomeModule { }

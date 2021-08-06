@@ -8,7 +8,8 @@
             <div class="card shadow">
                 <div class="row col-12 p-0 m-0 justify-content-center">
                     <div class="col-12 text-center asideProfileBG">
-                        <img src="https://cdn.zendalibros.com/wp-content/uploads/tommy-shelby-peaky-blinders-serie.jpg" alt="Avatar" class="avatar-md asideProfileImg img-fluid m-1 p-0">
+                        <img *ngIf="user.profileImg != ''" src="{{user.profileImg}}" alt="Avatar" class="avatar-md asideProfileImg img-fluid m-1 p-0">
+                        <img *ngIf="user.profileImg === ''" src="../../../assets/defaultProfile.png" alt="Avatar" class="avatar-md asideProfileImg img-fluid m-1 p-0">
                     </div>
                     <div class="col-12 mt-5 text-center">
                         <p>{{user.username}}</p>
@@ -16,9 +17,9 @@
                     <hr class="col-8 m-0 p-0">
                     <div class="col-12">
                         <ul class="infoProfile text-center p-0 m-0">
-                            <li>Contactos<p>12</p></li>
-                            <li>Visitas<p>12</p></li>
-                            <li>Likes<p>12</p></li>
+                            <li>Contactos<p>{{user.contacts.length}}</p></li>
+                            <li>Visitas<p>{{user.views}}</p></li>
+                            <li>Likes<p>{{user.likes}}</p></li>
                         </ul>
                     </div>
                 </div>
@@ -28,29 +29,50 @@
         <div class="col-12 col-md-6 p-1">
             <div class="card shadow-sm m-0">
                 <div class="row col-12 p-2 m-0 justify-content-center">
-                    <img src="https://cdn.zendalibros.com/wp-content/uploads/tommy-shelby-peaky-blinders-serie.jpg" alt="Avatar" class="avatar img-fluid m-1 p-0">
-                    <button class="col-8 col-lg-10 col-xl-11 btn btn createPostBtn  slide_right" (click)="showCreatePostModal()">Crear publicación</button>
+                    <img *ngIf="user.profileImg != ''" src="{{user.profileImg}}" alt="Avatar" class="avatar img-fluid m-1 p-0">
+                    <img *ngIf="user.profileImg === ''" src="../../../assets/defaultProfile.png" alt="Avatar" class="avatar img-fluid m-1 p-0">
+                    <button class="col-8 col-lg-10 col-xl-11 btn btn createPostBtn slide_right" (click)="showCreatePostModal()">Crear publicación</button>
                 </div>
             </div>
             <hr>
             <div class="pl-lg-5 pr-lg-5 p-0">
                 <div class="card shadow m-2" *ngFor="let post of listPost">
+                    <div class="row col-12 p-3 p-md-2 m-0 align-items-center">
+                        <div class="col-3 col-sm-2 m-0 p-0 text-center">
+                            <img src="https://cdn.zendalibros.com/wp-content/uploads/tommy-shelby-peaky-blinders-serie.jpg" alt="Avatar" class="avatar img-fluid m-1 p-0">
+                        </div>
+                        <div class="col-8 col-sm-9 m-0 p-0 align-items-center">
+                            <h5 class="text-truncate">Dueño del post</h5>
+                            <h6 class="card-subtitle mb-2 text-muted small-text">{{post.createdAt | date:mediumDate}}</h6>
+                        </div>
+                        <div class="col-1 m-0 p-0 text-center">
+                            <button class="btn" (click)="settingsPost.toggle($event)"><i class="pi pi-ellipsis-h"></i></button>
+                            <p-menu #settingsPost [popup]="true" [model]="postSettings" [appendTo]="'body'"></p-menu> 
+                        </div>
+                    </div>
                     <img src="{{post.imgURL}}" class="card-img-top img-fluid" alt="{{post.imgURL}}">
                     <div class="card-body">
                         <h5 class="card-title">{{post.title}}</h5>
+                        <h6 class="row col-12 m-0 p-0 mb-1">
+                            <i class="col-4 m-0 p-0 pi pi-heart" style="cursor: pointer;"><span> {{post.likes}}</span></i>
+                            <a class="col-8 m-0 p-0 text-right text-secondary font-weight-light" style="cursor: pointer;">12K Comentarios</a>
+                        </h6>
                         <p class="card-text">{{post.description}}</p>
                     </div>
                 </div>
             </div>
         </div>
         <!--ASIDE DERECHO-->
-        <div class="col-12 col-md-3 p-1">
-            <div class="card shadow">
-                <h1 class="text-center">Aside 2</h1>
+        <div class="d-none d-md-block col-12 col-md-3 p-1">
+            <div class="card shadow p-1">
+                <h5 class="text-center">Chats</h5>
             </div>
         </div>
     </div>
 </div>
+
+<!--BARRA DE CONTACTOS-->
+<p-panelMenu class="d-block d-md-none floatingContactsBar p-1" #chatsPanelMenu [model]="chatMenuSettings" [style]="{'width':'300px'}"></p-panelMenu>
 
 
 <!--MODAL CREAR PUBLICACIÓN-->
@@ -58,13 +80,15 @@
 [baseZIndex]="10000" [draggable]="true" [resizable]="false">
     <form>
         <div class="form-group">
-            <input type="text" class="form-control" id="username" placeholder="Título">
-            <textarea class="form-control" rows="4" cols="50" maxlength="200" placeholder="¿Sobre qué quieres hablar?" style="resize: none;"></textarea>
+            <input type="text" autocomplete="off" class="form-control" id="username" placeholder="Título">
+            <textarea class="form-control" rows="5" cols="50" maxlength="300" placeholder="¿Sobre qué quieres hablar?" style="resize: none;"></textarea>
         </div>
         <hr>
         <div class="text-right">
-            <button class="btn btn-info m-1">Cancelar</button>
-            <button class="btn btn-primary m-1">Publicar</button>
+            <button class="btn btn-info m-1" (click)="displayCreatePostModal=false">Cancelar</button>
+            <button class="btn btn-primary m-1" (click)="createPost()">Publicar</button>
         </div>
     </form>
 </p-dialog>
+
+<p-toast></p-toast>

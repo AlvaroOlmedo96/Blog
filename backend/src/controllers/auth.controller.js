@@ -14,7 +14,10 @@ export const signUp = async (req, res) => {
     const newUser = new User({
         username,
         email,
-        password: await User.encryptPassword(password)
+        password: await User.encryptPassword(password),
+        profileImg: '',
+        likes: 0,
+        views: 0
     });
 
     if(roles){

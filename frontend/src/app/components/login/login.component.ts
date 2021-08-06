@@ -58,7 +58,10 @@ export class LoginComponent implements OnInit {
     }
   };
 
-  errorReq = [
+  errorReqSignIn = [
+    {severity:'error', summary:'Error', detail:'Message Content', status: 0}
+  ];
+  errorReqSignUp = [
     {severity:'error', summary:'Error', detail:'Message Content', status: 0}
   ];
 
@@ -106,11 +109,11 @@ export class LoginComponent implements OnInit {
       this.user.password = this.signInForm.controls['password'].value.toString();
       this.authSrv.signIn(this.user).then( res => {
         if(res.status){
-          this.errorReq[0].status = res.status;
-          this.errorReq[0].detail = res.error.message;
+          this.errorReqSignIn[0].status = res.status;
+          this.errorReqSignIn[0].detail = res.error.message;
         }else{
-          this.errorReq[0].status = 0;
-          this.errorReq[0].detail = '';
+          this.errorReqSignIn[0].status = 0;
+          this.errorReqSignIn[0].detail = '';
           this.authSrv.saveToken(res.token);
           window.location.reload();//Refresco para que al redireccionar a través del authGuard se recarge el AppComponent y habilite el navbar
         }
@@ -150,6 +153,8 @@ export class LoginComponent implements OnInit {
     if(this.signUpForm.controls['c_password'].value != this.signUpForm.controls['password'].value){
       this.errors.c_password_signUp.error = true;
       this.errors.c_password_signUp.msg = 'Las contraseñas no coinciden';
+      this.loadSignUp = false;
+      return;
     }else{
       this.errors.c_password_signUp.error = false;
     }
@@ -161,15 +166,15 @@ export class LoginComponent implements OnInit {
       this.user.roles = [];
       this.authSrv.signUp(this.user).then( res => {
         if(res.status){
-          this.errorReq[0].status = res.status;
-          this.errorReq[0].detail = res.error.message;
+          this.errorReqSignUp[0].status = res.status;
+          this.errorReqSignUp[0].detail = res.error.message;
         }else{
-          this.errorReq[0].status = 0;
-          this.errorReq[0].detail = '';
-          this.authSrv.saveToken(res.token);
-          this.router.navigate(['/home']);
+          this.errorReqSignUp[0].status = 0;
+          this.errorReqSignUp[0].detail = '';
+          this.displayModal = false;
         }
-        this.loadSignIn = false;
+
+        this.loadSignUp = false;
       });
     }else{
       this.loadSignUp = false;

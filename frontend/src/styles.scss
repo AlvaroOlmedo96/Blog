@@ -24,6 +24,20 @@ body{
     font-family: 'Ubuntu-medium';
 }
 
+.small-text{
+    font-size: 12px;
+}
+
+.drawMiddleStop{
+    content: "\00b7";
+    font-size: 1.2rem;
+    color: var(--color-text-low-emphasis);
+    vertical-align: middle;
+    font-weight: 700;
+    display: inline;
+    margin-left: 4px;
+}
+
 .card{
     border-radius: 15px;
 }
@@ -61,4 +75,12 @@ body{
     border: 2px solid white;
     border-radius: 50%;
     object-fit: cover;
+}
+
+.floatingContactsBar{
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index: 50;
+    border-radius: 15px;
 }

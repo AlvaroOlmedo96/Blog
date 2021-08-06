@@ -2,9 +2,10 @@ import Post from '../models/Posts.model';
 
 
 export const createPost = async (req, res) => {
-    const {title, category, imgURL, description, likes} = req.body;
-    const newPost = new Post({title, category, imgURL, description, likes});
+    const {title, category, imgURL, description, propietaryId, propietaryUsername} = req.body;
+    const newPost = new Post({title, category, imgURL, description, propietaryId, propietaryUsername});
     const postSaved = await newPost.save();
+    console.log("Post creado", postSaved);
 
     res.status(201).json(postSaved);
 }

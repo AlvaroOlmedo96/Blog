@@ -16,7 +16,13 @@ const userSchema = new Schema({
     roles: [{
         ref: 'Role',
         type: Schema.Types.ObjectId
-    }]
+    }],
+    profileImg: String,
+    chats: [],
+    contacts: [],
+    posts: [],
+    views: Number,
+    likes: Number
 }, {
     timestamps: true,
     versionKey: false

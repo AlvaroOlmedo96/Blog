@@ -91,14 +91,5 @@ export class AuthService {
       return token;
     }
   }
-
-
-  async getPosts(){
-    const token = this.getToken();
-    const headerType = 'x-access-token';
-    const headers = {[headerType]: token};
-    return await this.http.get(`${this.url}/api/posts`, { headers: headers }).toPromise().then( res => {
-      return res;
-    });
-  }
+  
 }
