@@ -20,15 +20,16 @@ export class PostsService {
     const headerType = 'x-access-token';
     const headers = {[headerType]: token};
     return await this.http.get(`${this.url}/api/posts`, { headers: headers }).toPromise().then( res => {
-      return res;
+        return res;
     }).catch( error => {
         return error;
     });
   }
 
-  async createPost(token, body, currentUser){
+  async createPost(token, body){
     const headerType = 'x-access-token';
     const headers = {[headerType]: token};
+    console.log("BODY", body);
     return await this.http.post(`${this.url}/api/posts`, body, { headers: headers }).toPromise().then( res => {
         return res;
     }).catch( error => {

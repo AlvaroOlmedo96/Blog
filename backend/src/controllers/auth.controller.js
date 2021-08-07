@@ -16,6 +16,13 @@ export const signUp = async (req, res) => {
         email,
         password: await User.encryptPassword(password),
         profileImg: '',
+        biography: '',
+        profileImg: '',
+        profileCoverImg: '',
+        notifications: [],
+        chats: [],
+        contacts: [],
+        posts: [],
         likes: 0,
         views: 0
     });

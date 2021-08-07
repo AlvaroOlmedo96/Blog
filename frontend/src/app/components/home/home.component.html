@@ -2,7 +2,7 @@
     <div *ngIf="chargingData" class="text-center pt-5">
         <div class="spinner-grow text-primary mt-5 m-3" role="status" *ngFor="let repeat of [].constructor(3)"></div>
     </div>
-    <div class="row col-12 m-0 p-0 pt-5 justify-content-center" *ngIf="!chargingData">
+    <div class="row col-12 m-0 p-0 pt-5 justify-content-center appear" *ngIf="!chargingData">
         <!--ASIDE IZQUIERDO-->
         <div class="col-12 col-md-3 p-1">
             <div class="card shadow">
@@ -15,23 +15,30 @@
                         <p>{{user.username}}</p>
                     </div>
                     <hr class="col-8 m-0 p-0">
-                    <div class="col-12">
-                        <ul class="infoProfile text-center p-0 m-0">
-                            <li>Contactos<p>{{user.contacts.length}}</p></li>
-                            <li>Visitas<p>{{user.views}}</p></li>
-                            <li>Likes<p>{{user.likes}}</p></li>
-                        </ul>
+                    <div class="col-12 row m-0 p-0 justify-content-center">
+                        <div class="col-6 col-lg-4 m-0 p-0 text-center text-info">
+                            <p class="m-0">Contactos</p>
+                            <span>{{user.contacts.length}}</span>
+                        </div>
+                        <div class="col-6 col-lg-4 m-0 p-0 text-center text-info">
+                            <p class="m-0">Visitas</p>
+                            <span>{{user.views}}</span>
+                        </div>
+                        <div class="col-12 col-lg-4 m-0 p-0 text-center text-info">
+                            <p class="m-0">Likes</p>
+                            <span>{{user.likes}}</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         <!--CONTENIDO PRINCIPAL-->
-        <div class="col-12 col-md-6 p-1">
+        <div class="col-12 col-md-6 p-1 pb-5">
             <div class="card shadow-sm m-0">
                 <div class="row col-12 p-2 m-0 justify-content-center">
                     <img *ngIf="user.profileImg != ''" src="{{user.profileImg}}" alt="Avatar" class="avatar img-fluid m-1 p-0">
                     <img *ngIf="user.profileImg === ''" src="../../../assets/defaultProfile.png" alt="Avatar" class="avatar img-fluid m-1 p-0">
-                    <button class="col-8 col-lg-10 col-xl-11 btn btn createPostBtn slide_right" (click)="showCreatePostModal()">Crear publicación</button>
+                    <button class="col-8 col-lg-10 btn btn createPostBtn slide_right" (click)="showCreatePostModal()">Crear publicación</button>
                 </div>
             </div>
             <hr>
@@ -42,7 +49,7 @@
                             <img src="https://cdn.zendalibros.com/wp-content/uploads/tommy-shelby-peaky-blinders-serie.jpg" alt="Avatar" class="avatar img-fluid m-1 p-0">
                         </div>
                         <div class="col-8 col-sm-9 m-0 p-0 align-items-center">
-                            <h5 class="text-truncate">Dueño del post</h5>
+                            <h5 class="text-truncate">{{post.propietaryUsername}}</h5>
                             <h6 class="card-subtitle mb-2 text-muted small-text">{{post.createdAt | date:mediumDate}}</h6>
                         </div>
                         <div class="col-1 m-0 p-0 text-center">
@@ -53,11 +60,11 @@
                     <img src="{{post.imgURL}}" class="card-img-top img-fluid" alt="{{post.imgURL}}">
                     <div class="card-body">
                         <h5 class="card-title">{{post.title}}</h5>
+                        <h6 class="card-text">{{post.description}}</h6>
                         <h6 class="row col-12 m-0 p-0 mb-1">
                             <i class="col-4 m-0 p-0 pi pi-heart" style="cursor: pointer;"><span> {{post.likes}}</span></i>
-                            <a class="col-8 m-0 p-0 text-right text-secondary font-weight-light" style="cursor: pointer;">12K Comentarios</a>
+                            <a class="col-8 m-0 p-0 text-right text-secondary font-weight-light" style="cursor: pointer;">{{post.comments.length}} Comentarios</a>
                         </h6>
-                        <p class="card-text">{{post.description}}</p>
                     </div>
                 </div>
             </div>
@@ -78,15 +85,25 @@
 <!--MODAL CREAR PUBLICACIÓN-->
 <p-dialog header="Crear una publicación" position="top" [(visible)]="displayCreatePostModal" [modal]="true" [style]="modalWidth" 
 [baseZIndex]="10000" [draggable]="true" [resizable]="false">
-    <form>
+    <form [formGroup]="postForm" (ngSubmit)="createPost()">
         <div class="form-group">
-            <input type="text" autocomplete="off" class="form-control" id="username" placeholder="Título">
-            <textarea class="form-control" rows="5" cols="50" maxlength="300" placeholder="¿Sobre qué quieres hablar?" style="resize: none;"></textarea>
+            <input type="text" autocomplete="off" class="form-control mb-1" id="title" placeholder="Título" formControlName="title">
+            <textarea class="form-control" rows="5" cols="50" maxlength="300" placeholder="¿Sobre qué quieres hablar?" style="resize: none;" formControlName="description"></textarea>
         </div>
         <hr>
-        <div class="text-right">
-            <button class="btn btn-info m-1" (click)="displayCreatePostModal=false">Cancelar</button>
-            <button class="btn btn-primary m-1" (click)="createPost()">Publicar</button>
+        <div class="text-right row col-12 m-0 p-0 justify-content-center">
+            <div class="col-6 col-md-12 m-0 text-center align-content-center">
+                <button pButton pRipple type="button" icon="pi pi-image" class="p-button-rounded m-1"></button>
+                <button pButton pRipple type="button" icon="pi pi-video" class="p-button-rounded m-1"></button>
+                <button pButton pRipple type="button" icon="pi pi-file" class="p-button-rounded m-1"></button>
+            </div>
+            <div class="col-6 col-md-12 p-0 text-center">
+                <button class="btn btn-info m-1" (click)="displayCreatePostModal=false">Cancelar</button>
+                <button type="submit" class="btn btn-primary m-1 align-middle" (click)="createPost()" [disabled]="isPosting">
+                    <i class="pi pi-spin pi-spinner" style="font-size: 1rem" *ngIf="isPosting"></i> Publicar
+                </button>
+            </div>
+            
         </div>
     </form>
 </p-dialog>

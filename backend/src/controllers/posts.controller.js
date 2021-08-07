@@ -1,13 +1,17 @@
 import Post from '../models/Posts.model';
+import User from '../models/User.model';
 
 
 export const createPost = async (req, res) => {
-    const {title, category, imgURL, description, propietaryId, propietaryUsername} = req.body;
-    const newPost = new Post({title, category, imgURL, description, propietaryId, propietaryUsername});
+    const {title, category, imgURL, description, propietaryId, propietaryUsername, likes} = req.body;
+    const newPost = new Post({title, category, imgURL, description, propietaryId, propietaryUsername, likes});
     const postSaved = await newPost.save();
     console.log("Post creado", postSaved);
 
-    res.status(201).json(postSaved);
+    //Guardamos el post en el usuario que lo ha creado
+    const user = await User.findByIdAndUpdate(postSaved.propietaryId, {$push: {"posts": postSaved}});
+    console.log("CREADO POR", user);
+    res.status(201).json({post:postSaved, user:user});
 }
 
 export const getPosts = async (req, res) => {

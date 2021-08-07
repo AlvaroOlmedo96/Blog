@@ -10,25 +10,35 @@ import {DialogModule} from 'primeng/dialog';
 import { ToastModule } from 'primeng/toast';
 import {MenuModule} from 'primeng/menu';
 import {PanelMenuModule} from 'primeng/panelmenu';
+import {ButtonModule} from 'primeng/button';
+import { ProfileComponent } from './profile/profile.component';
+import {TabMenuModule} from 'primeng/tabmenu';
+import {FileUploadModule} from 'primeng/fileupload';
 
 const routes: Routes =[
-  { path: '', component: HomeComponent }
+  { path: '', component: HomeComponent },
+  { path: 'profile', component: ProfileComponent }
 ];
 
 @NgModule({
   declarations: [
-    HomeComponent
+    HomeComponent,
+    ProfileComponent
   ],
   imports: [
     RouterModule.forChild(routes),
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     AvatarModule,
     AvatarGroupModule,
     DialogModule,
     ToastModule,
     MenuModule,
-    PanelMenuModule
+    PanelMenuModule,
+    ButtonModule,
+    TabMenuModule,
+    FileUploadModule
   ]
 })
 export class HomeModule { }

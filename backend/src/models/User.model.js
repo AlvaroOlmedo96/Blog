@@ -17,7 +17,10 @@ const userSchema = new Schema({
         ref: 'Role',
         type: Schema.Types.ObjectId
     }],
+    biography: String,
     profileImg: String,
+    profileCoverImg: String,
+    notifications: [],
     chats: [],
     contacts: [],
     posts: [],
