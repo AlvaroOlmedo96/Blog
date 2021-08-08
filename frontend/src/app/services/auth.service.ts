@@ -51,6 +51,27 @@ export class AuthService {
     }
   }
 
+  
+  async getProfile(){
+    const user:User = await this.currentUser().then( user => {
+      return user;
+    }).catch(error => {return error;});
+    const profileImgURL = await this.getProfileImg(user.profileImg).then( img => {
+      return img;
+    }).catch(error => {return error;});
+    const profileCoverImgURL = await this.getProfileImg(user.profileCoverImg).then( img => {
+      return img;
+    }).catch(error => {return error;});
+
+    const profile = {
+      user:user,
+      profileImgURL: profileImgURL,
+      profileCoverImgURL: profileCoverImgURL
+    }
+
+    return profile;
+  }
+  
   async currentUser(){
     const token = this.getToken();
     const headerType = 'x-access-token';

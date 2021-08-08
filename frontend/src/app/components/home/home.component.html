@@ -8,8 +8,8 @@
             <div class="card shadow">
                 <div class="row col-12 p-0 m-0 justify-content-center">
                     <div class="col-12 text-center asideProfileBG">
-                        <img *ngIf="user.profileImg != ''" src="{{user.profileImg}}" alt="Avatar" class="avatar-md asideProfileImg img-fluid m-1 p-0">
-                        <img *ngIf="user.profileImg === ''" src="../../../assets/defaultProfile.png" alt="Avatar" class="avatar-md asideProfileImg img-fluid m-1 p-0">
+                        <img *ngIf="profileImg != ''" src="{{profileImg}}" alt="Avatar" class="avatar-md asideProfileImg img-fluid m-1 p-0">
+                        <img *ngIf="profileImg === ''" src="../../../assets/defaultProfile.png" alt="Avatar" class="avatar-md asideProfileImg img-fluid m-1 p-0">
                     </div>
                     <div class="col-12 mt-5 text-center">
                         <p>{{user.username}}</p>
@@ -36,17 +36,21 @@
         <div class="col-12 col-md-6 p-1 pb-5">
             <div class="card shadow-sm m-0">
                 <div class="row col-12 p-2 m-0 justify-content-center">
-                    <img *ngIf="user.profileImg != ''" src="{{user.profileImg}}" alt="Avatar" class="avatar img-fluid m-1 p-0">
-                    <img *ngIf="user.profileImg === ''" src="../../../assets/defaultProfile.png" alt="Avatar" class="avatar img-fluid m-1 p-0">
+                    <img *ngIf="profileImg != ''" src="{{profileImg}}" alt="Avatar" class="avatar img-fluid m-1 p-0">
+                    <img *ngIf="profileImg === ''" src="../../../assets/defaultProfile.png" alt="Avatar" class="avatar img-fluid m-1 p-0">
                     <button class="col-8 col-lg-10 btn btn createPostBtn slide_right" (click)="showCreatePostModal()">Crear publicación</button>
                 </div>
             </div>
             <hr>
             <div class="pl-lg-5 pr-lg-5 p-0">
-                <div class="card shadow m-2" *ngFor="let post of listPost">
+                <div class="card shadow m-2" *ngFor="let post of listPost; let i = index;" [style.background-color]="post.propietaryId == user._id ? '#B3E6FF' : 'white'">
                     <div class="row col-12 p-3 p-md-2 m-0 align-items-center">
-                        <div class="col-3 col-sm-2 m-0 p-0 text-center">
-                            <img src="https://cdn.zendalibros.com/wp-content/uploads/tommy-shelby-peaky-blinders-serie.jpg" alt="Avatar" class="avatar img-fluid m-1 p-0">
+                        <div class="col-3 col-sm-2 m-0 p-0 text-center" *ngIf="usersOfPost[i]">
+                            <img *ngIf="usersOfPost[i].profileImg != ''" [src]="usersOfPost[i].profileImg" alt="Avatar" class="avatar img-fluid m-1 p-0">
+                            <img *ngIf="usersOfPost[i].profileImg == ''" src="../../../assets/defaultProfile.png" alt="Avatar" class="avatar img-fluid m-1 p-0">
+                        </div>
+                        <div class="col-3 col-sm-2 m-0 p-0 text-center" *ngIf="!usersOfPost[i]">
+                            <img src="../../../assets/defaultProfile.png" alt="Avatar" class="avatar img-fluid m-1 p-0">
                         </div>
                         <div class="col-8 col-sm-9 m-0 p-0 align-items-center">
                             <h5 class="text-truncate">{{post.propietaryUsername}}</h5>

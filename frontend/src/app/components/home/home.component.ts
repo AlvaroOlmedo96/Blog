@@ -7,6 +7,7 @@ import { User } from 'src/app/models/user.model';
 import { AuthService } from 'src/app/services/auth.service';
 import { PostsService } from 'src/app/services/posts.service';
 import { SocketWebService } from 'src/app/services/socket-web.service';
+import { UsersService } from 'src/app/services/users.service';
 
 @Component({
   selector: 'app-home',
@@ -22,6 +23,7 @@ export class HomeComponent implements OnInit {
     username: '',
     contacts: []
   };
+  profileImg: string = '';
   chargingData:boolean = true;
 
   listPost:Array<Post> = [];
@@ -32,11 +34,13 @@ export class HomeComponent implements OnInit {
   textAreaPost: string;
   isPosting:boolean = false;
 
+  usersOfPost:any = [];
+
   chatMenuSettings: MenuItem[];
   
   
-  constructor(@Inject(PLATFORM_ID) platformId: Object, private authSrv: AuthService, private postSrv:PostsService, private socketSrv: SocketWebService, 
-  private messageService: MessageService, private formBuilder: FormBuilder) {
+  constructor(@Inject(PLATFORM_ID) platformId: Object, private authSrv: AuthService, private postSrv:PostsService, private userSrv: UsersService,
+  private socketSrv: SocketWebService, private messageService: MessageService, private formBuilder: FormBuilder) {
     this.isBrowser = isPlatformBrowser(platformId);
 
     socketSrv.callback.subscribe( res => {
@@ -88,23 +92,48 @@ export class HomeComponent implements OnInit {
   }
 
   async getProfile(){
-    var profileDataExists = (sessionStorage.profileData) ? JSON.parse(sessionStorage.profileData) : '';
-    if(profileDataExists == null || profileDataExists === ''){
-      await this.authSrv.currentUser().then( (res:User) => {
-        this.user = res;
-        sessionStorage.setItem('profileData', JSON.stringify(this.user));
-      });
-    }else{
-      this.user = JSON.parse(sessionStorage.profileData);
-    }
+    
+    await this.authSrv.getProfile().then( res => {
+      this.user = res.user;
+      let reader = new FileReader();
+      if(!res.profileImgURL.error){ 
+        reader.readAsDataURL(res.profileImgURL);
+        reader.onload = (_event) => {
+          this.profileImg = reader.result.toString();
+        }
+      }else{this.profileImg = '';}
+    });
+    
     //Enviamos esto al socket.io para notificar nueva conexión a todos los usuarios
     const userConection = {username:this.user.username, email:this.user.email};
     this.socketSrv.emitEvent(userConection);
   }
 
   async getPosts(){
-    await this.postSrv.getPosts(this.authSrv.getToken()).then( (res:[Post]) => {
+    await this.postSrv.getPosts(this.authSrv.getToken()).then( async (res:[Post]) => {
       this.listPost = res.sort((a,b) => <any>new Date(b.createdAt) - <any>new Date(a.createdAt)); //Ordenamos por los mas recientes
+      let usersId = [];
+      for(let post of this.listPost){
+        usersId.push(post.propietaryId);
+      }
+      await this.userSrv.getUsersById(this.authSrv.getToken(), usersId).then( async res => {
+        for(let user of res){
+          if(user.profileImg != '' && user.profileImg != null && user.profileImg != undefined){
+            await this.authSrv.getProfileImg(user.profileImg).then( img => {
+              let reader = new FileReader();
+              if(!img.error){ 
+                reader.readAsDataURL(img);
+                reader.onload = (_event) => {
+                  user.profileImg = reader.result.toString();
+                }
+              }else{user.profileImg = '';}
+              this.usersOfPost.push(user);
+            });
+          }else{
+            this.usersOfPost.push(user);
+          }
+        };
+      });
     });
   }
 

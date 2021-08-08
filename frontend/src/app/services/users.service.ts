@@ -27,6 +27,19 @@ export class UsersService {
     });
   }
 
+  async getUsersById(token:string, idList){
+    const headerType = 'x-access-token';
+    const headers = {[headerType]: token};
+    const params = {
+      idList: idList
+    }
+    return await this.http.get(`${this.url}/api/users/usersById`, { params: params, headers: headers}).toPromise().then( res => {
+        return res;
+    }).catch( error => {
+        return error;
+    });
+  }
+
   async getUserByName(token:string, textSearched: string){
     const headerType = 'x-access-token';
     const headers = {[headerType]: token};

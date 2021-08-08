@@ -39,13 +39,6 @@
           <a class="nav-link col-12 p-0 m-0" [routerLink]="['/home/profile']">Perfil</a>
         </li>
       </ul>
-      <button class="mr-2 text-center btn profileBtn">
-        <div class="m-0 p-0 align-middle" style="display: block;">
-          <img *ngIf="user.profileImg != ''" src="{{user.profileImg}}" alt="Avatar" class="avatarNav img-fluid">
-          <img *ngIf="user.profileImg === ''" src="../../../assets/defaultProfile.png" alt="Avatar" class="avatarNav img-fluid">
-          <p class="p-0 m-0">Perfil</p>
-        </div>
-      </button>
       <div class="text-right">
         <button type="button" pButton pRipple icon="pi pi-cog" class="p-button-secondary p-button-rounded" (click)="menu.toggle($event)"></button>
         <p-menu #menu [popup]="true" [model]="options" appendTo="body"></p-menu> 

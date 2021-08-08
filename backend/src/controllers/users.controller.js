@@ -9,6 +9,21 @@ export const getUsers = async (req, res) => {
     res.json(users);
 }
 
+export const getUsersById = async (req, res) => {
+    const { idList } = req.query;
+    let usersList = [];
+    console.log("LIST OF ID´S", idList);
+    for(let id of idList){
+        const user = await User.findById(id);
+        if(user != null){
+            let finalUser = {username: user.username, email:user.email, _id: user._id, profileImg: user.profileImg };
+            usersList.push(finalUser);
+        }
+    }
+    console.log("LIST OF USERS");
+    res.json(usersList);
+}
+
 export const getUserById = async (req, res) => {
     const users = await User.findById(req.params.postId);
     res.json(users);

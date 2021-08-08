@@ -31,8 +31,8 @@ export class ProfileComponent implements OnInit {
     profileCoverImg: '',
     biography: ''
   };
-  profileImg: string;
-  profileCoverImg: string;
+  profileImg: string = '';
+  profileCoverImg: string = '';
 
   constructor(@Inject(PLATFORM_ID) platformId: Object, private authSrv: AuthService, private formBuilder: FormBuilder, private userSrv:UsersService) { 
     this.isBrowser = isPlatformBrowser(platformId);
@@ -65,31 +65,25 @@ export class ProfileComponent implements OnInit {
 
 
   async getProfile(){
-    await this.authSrv.currentUser().then( async (res:User) => {
-      this.user = await res;
-      this.editProfileForm.controls['biography'].setValue(this.user.biography);
-    });
+    await this.authSrv.getProfile().then( res => {
+      this.user = res.user;
+      let reader = new FileReader();
+      let reader2 = new FileReader();
 
-    await this.authSrv.getProfileImg(this.user.profileImg).then( res => {
-      let reader = new FileReader();
-      reader.readAsDataURL(res);
-      reader.onload = (_event) => {
-        this.profileImg = reader.result.toString();
-      }
-    }).catch( error => {
-      this.profileImg = '';
+      if(!res.profileImgURL.error){ 
+        reader.readAsDataURL(res.profileImgURL);
+        reader.onload = (_event) => {
+          this.profileImg = reader.result.toString();
+        }
+      }else{this.profileImg = '';}
+
+      if(!res.profileCoverImgURL.error){ 
+        reader2.readAsDataURL(res.profileCoverImgURL);
+        reader2.onload = (_event) => {
+          this.profileCoverImg = reader2.result.toString();
+        }
+      }else{this.profileCoverImg = '';}
     });
-    
-    await this.authSrv.getProfileImg(this.user.profileCoverImg).then( res => {
-      let reader = new FileReader();
-      reader.readAsDataURL(res);
-      reader.onload = (_event) => {
-        this.profileCoverImg = reader.result.toString();
-      }
-    }).catch( error => {
-      this.profileCoverImg = '';
-    });;
-    
   }
 
   showEditProfile(){
