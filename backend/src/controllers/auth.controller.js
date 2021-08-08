@@ -58,7 +58,6 @@ export const signIn = async (req, res) => {
     const token = jwt.sign({id: userFound._id}, config.SECRET, {
         expiresIn: 86400 //24h de duración del token valido
     });
-    console.log(userFound);
     res.json({token: token});
 }
 
@@ -78,6 +77,5 @@ export const currentUser = async (req, res) => {
     const userId = await getUserId(token);
     const user = await User.findById(userId);
     if(!user) return res.status(404).json({message: 'User not found.'});
-    console.log("currentUser", user);
     res.json(user);
 }

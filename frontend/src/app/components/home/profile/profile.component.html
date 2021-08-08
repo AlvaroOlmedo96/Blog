@@ -4,11 +4,11 @@
     </div>
     <div class="row col-12 m-0 p-0 pt-3 justify-content-center appear" *ngIf="!chargingData">
         <!--HEADER-->
-        <header class="col-12 p-0 headerBG">
+        <header class="col-12 p-0 headerBG" [style.background-image]="profileCoverImg != '' && profileCoverImg != 'data:' ? 'url(' + profileCoverImg + ')' : 'url( ../../../../assets/defaultProfileBg.jpg)'">
             <div class="row col-12 m-0 p-0 pt-5">
                 <div class="col-12 p-0 text-center">
-                    <img *ngIf="user.profileImg != ''" src="{{user.profileImg}}" alt="Avatar" class="avatar-profile img-fluid m-1 p-0">
-                    <img *ngIf="user.profileImg === ''" src="../../../assets/defaultProfile.png" alt="Avatar" class="avatar-profile img-fluid m-1 p-0">
+                    <img *ngIf="profileImg != ''" src="{{profileImg}}" alt="Avatar" class="avatar-profile img-fluid m-1 p-0">
+                    <img *ngIf="profileImg === ''" src="../../../assets/defaultProfile.png" alt="Avatar" class="avatar-profile img-fluid m-1 p-0">
                 </div>
             </div>
         </header>
@@ -60,7 +60,7 @@
 [baseZIndex]="10000" [draggable]="true" [resizable]="false">
     <form [formGroup]="editProfileForm" (ngSubmit)="updateProfile()">
         <div class="form-group mt-1">
-            <input class="form-control" rows="5" cols="50" maxlength="300" placeholder="Añade tú biografía " style="resize: none;" formControlName="biography">
+            <input class="form-control" rows="5" cols="50" maxlength="300" placeholder="Añade tú biografía " style="resize: none;" formControlName="biography" value="{{user.biography}}">
             <div class="text-center m-2">
                 <button (click)="openFile('profileImgInput')" pButton pRipple type="button" icon="pi pi-camera" label="Cambiar foto" class="col-12 mb-1 p-button-rounded p-button-info">
                     <input id="profileImgInput" type="file" style="display:none" (change)="onBasicUpload($event)">
@@ -75,8 +75,8 @@
                 <div class="col-12 p-0 headerBG" [style.background-image]="uploadImg.profileCoverImg != '' ? 'url(' + uploadImg.profileCoverImg + ')' : 'url( ../../../../assets/defaultProfileBg.jpg)'">
                     <div class="row col-12 m-0 p-0 pt-5">
                         <div class="col-12 p-0 text-center">
-                            <img *ngIf="user.profileImg != '' && uploadImg.profileImg == ''" src="{{user.profileImg}}" alt="Avatar" class="avatar-profile img-fluid m-1 p-0">
-                            <img *ngIf="user.profileImg === '' && uploadImg.profileImg == ''" src="../../../assets/defaultProfile.png" alt="Avatar" class="avatar-profile img-fluid m-1 p-0">
+                            <img *ngIf="profileImg != '' && uploadImg.profileImg == ''" src="{{profileImg}}" alt="Avatar" class="avatar-profile img-fluid m-1 p-0">
+                            <img *ngIf="profileImg === '' && uploadImg.profileImg == ''" src="../../../assets/defaultProfile.png" alt="Avatar" class="avatar-profile img-fluid m-1 p-0">
                             <img *ngIf="uploadImg.profileImg != ''" [src]="uploadImg.profileImg" alt="Avatar" class="avatar-profile img-fluid m-1 p-0">
                         </div>
                     </div>
@@ -87,7 +87,7 @@
         <div class="text-right row col-12 m-0 p-0 justify-content-center">
             <div class="col-6 col-md-12 p-0 text-center">
                 <button class="btn btn-info m-1" (click)="displayEditProfileModal=false">Cancelar</button>
-                <button type="submit" class="btn btn-primary m-1 align-middle" (click)="updateProfile()" [disabled]="isUpdatingProfile">
+                <button type="submit" class="btn btn-primary m-1 align-middle" [disabled]="isUpdatingProfile">
                     <i class="pi pi-spin pi-spinner" style="font-size: 1rem" *ngIf="isUpdatingProfile"></i> Modificar
                 </button>
             </div>

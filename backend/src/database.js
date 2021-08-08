@@ -10,7 +10,7 @@ mongoose.connect(dbDev, {
     useCreateIndex: true,
     useFindAndModify: false
 }).then( db => {
-    console.log("Db is connected");
+    console.log("MongoDB is connected");
 }).catch( error => {
-    console.log("Db Error", error);
+    console.log("MongoDB Error", error);
 });

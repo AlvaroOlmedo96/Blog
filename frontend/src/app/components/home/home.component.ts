@@ -93,13 +93,13 @@ export class HomeComponent implements OnInit {
       await this.authSrv.currentUser().then( (res:User) => {
         this.user = res;
         sessionStorage.setItem('profileData', JSON.stringify(this.user));
-        //Enviamos esto al socket.io para notificar nueva conexión a todos los usuarios
-        const userConection = {username:res.username, email:res.email};
-        this.socketSrv.emitEvent(userConection);
       });
     }else{
       this.user = JSON.parse(sessionStorage.profileData);
     }
+    //Enviamos esto al socket.io para notificar nueva conexión a todos los usuarios
+    const userConection = {username:this.user.username, email:this.user.email};
+    this.socketSrv.emitEvent(userConection);
   }
 
   async getPosts(){

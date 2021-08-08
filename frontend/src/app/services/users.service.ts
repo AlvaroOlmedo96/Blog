@@ -33,7 +33,7 @@ export class UsersService {
     const params = {
         username: textSearched
     }
-    return await this.http.get(`${this.url}/api/users/userName`, { params: params, headers: headers}).toPromise().then( res => {
+    return await this.http.get(`${this.url}/api/users/userName`, { params: params, headers: headers}).toPromise().then( (res:any) => {
         return res;
     }).catch( error => {
         return error;
@@ -42,6 +42,31 @@ export class UsersService {
 
   getUserById(){
 
+  }
+
+  //UPDATE PROFILE
+  async updateProfileImages(credentials, imageType, file){
+    const headerType = 'x-access-token';
+    const headers = {[headerType]: credentials.token};
+    const params = {
+      id: credentials.userId,
+      imageType: imageType
+    }
+    return await this.http.post(`${this.url}/api/users/updateProfileImages`, file, { params: params, headers: headers}).toPromise().then( res => {
+        return res;
+    }).catch( error => {
+        return error;
+    });
+  }
+
+  async updateProfile(body){
+    const headerType = 'x-access-token';
+    const headers = {[headerType]: body.token};
+    return await this.http.post(`${this.url}/api/users/updateProfile`, body, { headers: headers}).toPromise().then( res => {
+        return res;
+    }).catch( error => {
+        return error;
+    });
   }
 
 }

@@ -46,6 +46,7 @@ export class AuthService {
   signOut(){
     if(this.isBrowser){
       localStorage.clear();
+      sessionStorage.clear();
       window.location.reload();
     }
   }
@@ -54,8 +55,24 @@ export class AuthService {
     const token = this.getToken();
     const headerType = 'x-access-token';
     const headers = {[headerType]: token};
-    return await this.http.get(`${this.url}/api/auth/profile`, { headers: headers }).toPromise().then( res => {
+    return await this.http.get(`${this.url}/api/auth/profile`, { headers: headers }).toPromise().then( (res:User) => {
       return res;
+    }).catch( error => {
+      return error;
+    });
+  }
+
+  async getProfileImg(imageURL){
+    const token = this.getToken();
+    const headerType = 'x-access-token';
+    const headers = {[headerType]: token};
+
+    const params = {
+      path: imageURL.replace('src/','').replace('public/','')
+    }
+    
+    return this.http.get(`${this.url}/api/uploads/getProfileImages`, { params: params, headers: headers, responseType: 'blob' }).toPromise().then( (img:any) => {
+      return img;
     }).catch( error => {
       return error;
     });

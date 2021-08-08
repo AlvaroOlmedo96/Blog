@@ -6,6 +6,8 @@ import {createRoles} from './libs/initialSetup';
 import postsRoutes from './routes/posts.routes';
 import authRoutes from './routes/auth.routes';
 import usersRoutes from './routes/users.routes';
+import path from 'path';
+import * as authJwt from './middlewares/authJwt';
 
 const app = express();
 //Requiere esta configuracion para que funcione socket.io
@@ -37,6 +39,7 @@ app.get('/', (req, res) => {
 app.use('/api/posts', postsRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);
+app.use('/api/uploads', authJwt.verifyToken, express.static(path.join(__dirname, '/public/uploads')), usersRoutes);
 
 //------Configuramos Socket.io-------
 io.on('connection', (socket) => {
@@ -45,11 +48,11 @@ io.on('connection', (socket) => {
 
     const sala = socket.join(nameRoom);
 
-    console.log(`Se ha conectado el dispositivo ${idHandSocket} en la sala ${sala}`);
+    console.log(`SOCKET.IO === Se ha conectado el dispositivo ${idHandSocket} en la sala ${sala}`);
 
     socket.on('event', (res) => {
         const data = res;
-        console.log(res);
+        console.log("SOCKET.IO event ===" , res);
 
         //socket.emit(grupo) => emite el evento a todos los dispositivos conectados pertenecientes a un grupo(socket.join()) incluyendo al emisor del evento
         //socket.to(grupo) => lo mismo que emit() pero no incluye al emisor del evento
