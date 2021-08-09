@@ -3,8 +3,9 @@
       <!--<i class="pi pi-facebook d-inline-block align-top text-primary" style="font-size: 3rem"></i>-->
       <img src="../../../assets/logo.png" alt="logo" width="40" height="40" class="d-inline-block align-text-top logoImage shadow">
     </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <i class="pi pi-bars" style="font-size: 2rem"></i>
+    <button class="navbar-toggler" type="button" id="toggleBtn" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <i *ngIf="!isBtnCollapse" class="pi pi-bars" style="font-size: 2rem"></i>
+      <i *ngIf="isBtnCollapse" class="pi pi-times" style="font-size: 2rem"></i>
     </button>
   
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -26,15 +27,15 @@
         </p-overlayPanel>
       </div>
       <ul class="navbar-nav mr-auto pt-3 p-lg-0 navItem">
-        <li class="nav-item active row text-center p-1 m-1" [routerLink]="['/home']" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}">
+        <li class="nav-item active row text-center p-1 m-1" (click)="collapseNavbar()" [routerLink]="['/home']" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}">
           <i class="pi pi-home col-12 p-0 m-0"></i>
           <a class="nav-link col-12 p-0 m-0">Home <span class="sr-only">(current)</span></a>
         </li>
-        <li class="nav-item row text-center p-1 m-1" [routerLink]="['/notifications']" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}">
+        <li class="nav-item row text-center p-1 m-1" (click)="collapseNavbar()" [routerLink]="['/notifications']" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}">
           <i class="pi pi-bell col-12 p-0 m-0"></i>
           <a class="nav-link col-12 p-0 m-0">Notificaciones</a>
         </li>
-        <li class="nav-item row text-center p-1 m-1" [routerLink]="['/home/profile']" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}">
+        <li class="nav-item row text-center p-1 m-1" (click)="collapseNavbar()" [routerLink]="['/home/profile']" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}">
           <i class="pi pi-user col-12 p-0 m-0"></i>
           <a class="nav-link col-12 p-0 m-0">Perfil</a>
         </li>

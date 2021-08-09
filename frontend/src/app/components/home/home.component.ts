@@ -1,6 +1,7 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { NgxImageCompressService } from 'ngx-image-compress';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Post } from 'src/app/models/posts.model';
 import { User } from 'src/app/models/user.model';
@@ -41,7 +42,7 @@ export class HomeComponent implements OnInit {
   
   
   constructor(@Inject(PLATFORM_ID) platformId: Object, private authSrv: AuthService, private postSrv:PostsService, private userSrv: UsersService,
-  private socketSrv: SocketWebService, private messageService: MessageService, private formBuilder: FormBuilder) {
+  private socketSrv: SocketWebService, private messageService: MessageService, private formBuilder: FormBuilder, private imageCompress: NgxImageCompressService) {
     this.isBrowser = isPlatformBrowser(platformId);
 
     socketSrv.callback.subscribe( res => {
@@ -103,7 +104,7 @@ export class HomeComponent implements OnInit {
           this.profileImg = reader.result.toString();
         }
       }else{this.profileImg = '';}
-      
+
       if(res.profileCoverImgURL != null && res.profileCoverImgURL != ''){ 
         reader2.readAsDataURL(res.profileCoverImgURL);
         reader2.onload = (_event) => {
@@ -173,7 +174,17 @@ export class HomeComponent implements OnInit {
     }else{
       this.isPosting = false;
     }
-    
+  }
+
+  openImageSelector(){
+    this.imageCompress.uploadFile().then(({image, orientation}) => {
+      console.warn('Size in bytes was:', this.imageCompress.byteCount(image));
+      this.imageCompress.compressFile(image, orientation, 50, 50).then(
+        result => {
+          console.warn('Size in bytes is now:', this.imageCompress.byteCount(result));
+        }
+      );
+    });
   }
 
 }

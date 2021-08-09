@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import {MenuItem, MessageService} from 'primeng/api';
 import { User } from 'src/app/models/user.model';
 import { AuthService } from 'src/app/services/auth.service';
@@ -12,9 +12,16 @@ import { UsersService } from 'src/app/services/users.service';
 })
 export class NavbarComponent implements OnInit {
 
+  @HostListener('window:click', ['$event']) 
+  doSomething(event:any) {
+    this.isBtnCollapse = !document.getElementById('toggleBtn').classList.contains('collapsed');
+  }
+
   navbarSearchText:string = '';
   options: MenuItem[];
   recommendedListSearched = [];
+
+  isBtnCollapse:boolean = false;
 
   user:User = {
     username: ''
@@ -23,7 +30,6 @@ export class NavbarComponent implements OnInit {
   constructor(private authSrv: AuthService, private messageService: MessageService, private userSrv:UsersService) { }
 
   ngOnInit(): void {
-
     this.getProfile();
 
     this.options = [
@@ -34,6 +40,11 @@ export class NavbarComponent implements OnInit {
       }}
     ];
 
+  }
+
+  collapseNavbar(){
+    document.getElementById('toggleBtn').classList.add('collapsed');
+    document.getElementById('navbarSupportedContent').classList.remove('show');
   }
 
   getProfile(){
