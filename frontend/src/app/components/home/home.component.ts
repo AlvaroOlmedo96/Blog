@@ -24,6 +24,7 @@ export class HomeComponent implements OnInit {
     contacts: []
   };
   profileImg: string = '';
+  profileCoverImg: string = '';
   chargingData:boolean = true;
 
   listPost:Array<Post> = [];
@@ -95,13 +96,20 @@ export class HomeComponent implements OnInit {
     
     await this.authSrv.getProfile().then( res => {
       this.user = res.user;
-      let reader = new FileReader();
-      if(!res.profileImgURL.error){ 
+      let reader = new FileReader(); let reader2 = new FileReader();
+      if(res.profileImgURL != null && res.profileImgURL != ''){ 
         reader.readAsDataURL(res.profileImgURL);
         reader.onload = (_event) => {
           this.profileImg = reader.result.toString();
         }
       }else{this.profileImg = '';}
+      
+      if(res.profileCoverImgURL != null && res.profileCoverImgURL != ''){ 
+        reader2.readAsDataURL(res.profileCoverImgURL);
+        reader2.onload = (_event) => {
+          this.profileCoverImg = reader2.result.toString();
+        }
+      }else{this.profileCoverImg = '';}
     });
     
     //Enviamos esto al socket.io para notificar nueva conexión a todos los usuarios
@@ -113,27 +121,29 @@ export class HomeComponent implements OnInit {
     await this.postSrv.getPosts(this.authSrv.getToken()).then( async (res:[Post]) => {
       this.listPost = res.sort((a,b) => <any>new Date(b.createdAt) - <any>new Date(a.createdAt)); //Ordenamos por los mas recientes
       let usersId = [];
-      for(let post of this.listPost){
-        usersId.push(post.propietaryId);
-      }
-      await this.userSrv.getUsersById(this.authSrv.getToken(), usersId).then( async res => {
-        for(let user of res){
-          if(user.profileImg != '' && user.profileImg != null && user.profileImg != undefined){
-            await this.authSrv.getProfileImg(user.profileImg).then( img => {
-              let reader = new FileReader();
-              if(!img.error){ 
-                reader.readAsDataURL(img);
-                reader.onload = (_event) => {
-                  user.profileImg = reader.result.toString();
-                }
-              }else{user.profileImg = '';}
+      if(this.listPost.length > 0){
+        for(let post of this.listPost){
+          usersId.push(post.propietaryId);
+        }
+        await this.userSrv.getUsersById(this.authSrv.getToken(), usersId).then( async res => {
+          for(let user of res){
+            if(user.profileImg != '' && user.profileImg != null && user.profileImg != undefined){
+              await this.authSrv.getProfileImg(user.profileImg).then( img => {
+                let reader = new FileReader();
+                if(!img.error){ 
+                  reader.readAsDataURL(img);
+                  reader.onload = (_event) => {
+                    user.profileImg = reader.result.toString();
+                  }
+                }else{user.profileImg = '';}
+                this.usersOfPost.push(user);
+              });
+            }else{
               this.usersOfPost.push(user);
-            });
-          }else{
-            this.usersOfPost.push(user);
-          }
-        };
-      });
+            }
+          };
+        });
+      }
     });
   }
 

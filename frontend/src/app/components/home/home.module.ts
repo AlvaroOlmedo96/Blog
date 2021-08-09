@@ -14,6 +14,9 @@ import {ButtonModule} from 'primeng/button';
 import { ProfileComponent } from './profile/profile.component';
 import {TabMenuModule} from 'primeng/tabmenu';
 import {FileUploadModule} from 'primeng/fileupload';
+import {MessageModule} from 'primeng/message';
+
+import {NgxImageCompressService} from 'ngx-image-compress';
 
 const routes: Routes =[
   { path: '', component: HomeComponent },
@@ -38,7 +41,11 @@ const routes: Routes =[
     PanelMenuModule,
     ButtonModule,
     TabMenuModule,
-    FileUploadModule
+    FileUploadModule,
+    MessageModule
+  ],
+  providers: [
+    NgxImageCompressService
   ]
 })
 export class HomeModule { }

@@ -26,6 +26,15 @@
     cursor: pointer;
     border-radius: 5px;
 }
+.active{
+    background-color: rgba(139, 193, 255, 0.719);
+    transition: 0.25s ease-in-out;
+    border-radius: 15px;
+}
+.active *{
+    color: white;
+    transition: 0.25s ease-in-out;
+}
 .navItem li:hover{
     background-color: rgba(139, 193, 255, 0.719);
     transition: 0.25s ease-in-out;

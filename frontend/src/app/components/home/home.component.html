@@ -7,12 +7,12 @@
         <div class="col-12 col-md-3 p-1">
             <div class="card shadow">
                 <div class="row col-12 p-0 m-0 justify-content-center">
-                    <div class="col-12 text-center asideProfileBG">
-                        <img *ngIf="profileImg != ''" src="{{profileImg}}" alt="Avatar" class="avatar-md asideProfileImg img-fluid m-1 p-0">
-                        <img *ngIf="profileImg === ''" src="../../../assets/defaultProfile.png" alt="Avatar" class="avatar-md asideProfileImg img-fluid m-1 p-0">
+                    <div class="col-12 text-center asideProfileBG" [style.background-image]="profileCoverImg != '' && profileCoverImg != 'data:' ? 'url(' + profileCoverImg + ')' : 'url( ../../../../assets/defaultProfileBg.jpg)'">
+                        <img [routerLink]="['/home/profile']" *ngIf="profileImg != ''" src="{{profileImg}}" alt="Avatar" class="avatar-md asideProfileImg img-fluid m-1 p-0">
+                        <img [routerLink]="['/home/profile']" *ngIf="profileImg === ''" src="../../../assets/defaultProfile.png" alt="Avatar" class="avatar-md asideProfileImg img-fluid m-1 p-0">
                     </div>
                     <div class="col-12 mt-5 text-center">
-                        <p>{{user.username}}</p>
+                        <p [routerLink]="['/home/profile']" class="asideUsername">{{user.username}}</p>
                     </div>
                     <hr class="col-8 m-0 p-0">
                     <div class="col-12 row m-0 p-0 justify-content-center">

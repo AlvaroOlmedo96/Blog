@@ -26,17 +26,17 @@
         </p-overlayPanel>
       </div>
       <ul class="navbar-nav mr-auto pt-3 p-lg-0 navItem">
-        <li class="nav-item active row text-center p-1 m-1" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}">
+        <li class="nav-item active row text-center p-1 m-1" [routerLink]="['/home']" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}">
           <i class="pi pi-home col-12 p-0 m-0"></i>
-          <a class="nav-link col-12 p-0 m-0" [routerLink]="['/home']">Home <span class="sr-only">(current)</span></a>
+          <a class="nav-link col-12 p-0 m-0">Home <span class="sr-only">(current)</span></a>
         </li>
-        <li class="nav-item row text-center p-1 m-1" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}">
+        <li class="nav-item row text-center p-1 m-1" [routerLink]="['/notifications']" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}">
           <i class="pi pi-bell col-12 p-0 m-0"></i>
-          <a class="nav-link col-12 p-0 m-0" [routerLink]="['/home']">Notificaciones</a>
+          <a class="nav-link col-12 p-0 m-0">Notificaciones</a>
         </li>
-        <li class="nav-item row text-center p-1 m-1" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}">
+        <li class="nav-item row text-center p-1 m-1" [routerLink]="['/home/profile']" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}">
           <i class="pi pi-user col-12 p-0 m-0"></i>
-          <a class="nav-link col-12 p-0 m-0" [routerLink]="['/home/profile']">Perfil</a>
+          <a class="nav-link col-12 p-0 m-0">Perfil</a>
         </li>
       </ul>
       <div class="text-right">

@@ -10,19 +10,13 @@ import path from 'path';
 import * as authJwt from './middlewares/authJwt';
 
 const app = express();
-//Requiere esta configuracion para que funcione socket.io
-const server = require('http').createServer(app);
-const io = require('socket.io')(server, {
-    cors: {
-        origins: ['http://localhost:4200']
-    }
-});
 
+const whitelist = ['http://localhost:4200', 'http://192.168.1.38'];
 
 //Se comprueba si ya existen Roles en bbdd, de lo contrario se crearan
 createRoles();
 
-app.use(cors());
+app.use(cors({credentials: true, origin: true}));
 app.use(morgan('dev'));
 app.use(express.json());
 
@@ -41,6 +35,14 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/uploads', authJwt.verifyToken, express.static(path.join(__dirname, '/public/uploads')), usersRoutes);
 
+
+//Requiere esta configuracion para que funcione socket.io
+const server = require('http').createServer(app);
+const io = require('socket.io')(server, {
+    cors: {
+        origins: whitelist
+    }
+});
 //------Configuramos Socket.io-------
 io.on('connection', (socket) => {
     const idHandSocket = socket.id; //Cada vez que alguien se conecta se genera un Id único.

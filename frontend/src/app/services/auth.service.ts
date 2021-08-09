@@ -2,13 +2,14 @@ import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { User } from '../models/user.model';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  private url:string = 'http://localhost:3000';
+  private url:string = environment.apiURL;
 
   private isBrowser:boolean = false;
   isLoggedIn:boolean = false;//Variable para que pueda ser usada por AppComponent y habilitar el navbar
@@ -57,10 +58,13 @@ export class AuthService {
       return user;
     }).catch(error => {return error;});
     const profileImgURL = await this.getProfileImg(user.profileImg).then( img => {
-      return img;
+      if(img.status){return null;}
+      else{return img;}
+      
     }).catch(error => {return error;});
     const profileCoverImgURL = await this.getProfileImg(user.profileCoverImg).then( img => {
-      return img;
+      if(img.status){return null;}
+      else{return img;}
     }).catch(error => {return error;});
 
     const profile = {
@@ -91,12 +95,17 @@ export class AuthService {
     const params = {
       path: imageURL.replace('src/','').replace('public/','')
     }
-    
-    return this.http.get(`${this.url}/api/uploads/getProfileImages`, { params: params, headers: headers, responseType: 'blob' }).toPromise().then( (img:any) => {
+    if(imageURL != '' && imageURL != null && imageURL != undefined){
+      return this.http.get(`${this.url}/api/uploads/getProfileImages`, { params: params, headers: headers, responseType: 'blob' }).toPromise().then( (img:any) => {
+        return img;
+      }).catch( error => {
+        return error;
+      });
+    }else{
+      let img = '';
       return img;
-    }).catch( error => {
-      return error;
-    });
+    }
+    
   }
 
 

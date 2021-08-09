@@ -16,8 +16,21 @@
 .asideProfileBG{
     border-radius: 15px 15px 0px 0px;
     background-image: url(../../../assets/defaultProfileBg.jpg);
+    background-position: center;
+    background-size: cover;
 }
 .asideProfileImg{
+    cursor: pointer;
     position: relative;
     top: 35px;
+    transition: 0.15s ease-in-out;
+}
+.asideProfileImg:hover{
+    box-shadow: 0px 0px 50px 0px white;
+    transition: 0.15s ease-in-out;
+}
+
+.asideUsername:hover{
+    cursor: pointer;
+    text-decoration: underline;
 }

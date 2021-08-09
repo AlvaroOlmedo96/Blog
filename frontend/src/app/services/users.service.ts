@@ -2,13 +2,14 @@ import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { User } from '../models/user.model';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsersService {
 
-  private url:string = 'http://localhost:3000';
+  private url:string = environment.apiURL;
 
   private isBrowser:boolean = false;
   isLoggedIn:boolean = false;//Variable para que pueda ser usada por AppComponent y habilitar el navbar
