@@ -15,6 +15,7 @@ import { ProfileComponent } from './profile/profile.component';
 import {TabMenuModule} from 'primeng/tabmenu';
 import {FileUploadModule} from 'primeng/fileupload';
 import {MessageModule} from 'primeng/message';
+import {KnobModule} from 'primeng/knob';
 
 import {NgxImageCompressService} from 'ngx-image-compress';
 import { ImageCropperModule } from 'ngx-image-cropper';
@@ -44,6 +45,7 @@ const routes: Routes =[
     ButtonModule,
     TabMenuModule,
     FileUploadModule,
+    KnobModule,
     MessageModule,
     ImageCropperModule
   ],

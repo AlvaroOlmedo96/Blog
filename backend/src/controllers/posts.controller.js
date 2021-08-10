@@ -46,6 +46,7 @@ export const getImagesOfPosts = async (req, res) => {
 export const getPosts = async (req, res) => {
    try {
         const posts = await Post.find();
+        posts.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)); //Ordenamos por los mas recientes
         res.json(posts);
    } catch (error) {
         res.status(500).json({msg: 'Server error for getPost'});
@@ -71,6 +72,7 @@ export const getPostsById = async (req, res) => {
                 }
             }
         }
+        postsList.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)); //Ordenamos por los mas recientes
         res.json(postsList);
     } catch (error) {
         res.status(500).json({msg: 'Server error for PostsById'});

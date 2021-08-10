@@ -132,6 +132,8 @@ export class ProfileComponent implements OnInit {
   openFile(inputId){
     this.lastFileOpened = inputId;
     document.getElementById(inputId).click();
+    console.time('onBasicUpload')
+    console.timeEnd('onBasicUpload');
   }
 
   resetProfileModal(){
@@ -178,7 +180,6 @@ export class ProfileComponent implements OnInit {
             this.compressingFile = false;
             this.fileOverLimit = true;
           }
-          
           this.compressingFile = false;
         });
       }

@@ -119,7 +119,7 @@ export class AuthService {
         return res;
       }).catch(error => {
         this.isLoggedIn = false;
-        return error;
+        return false;
       });
     }else{
       this.isLoggedIn = false;

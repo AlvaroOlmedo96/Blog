@@ -124,12 +124,13 @@ export class HomeComponent implements OnInit {
   async getPosts(){
     let usersId = [];
     await this.postSrv.getPosts(this.authSrv.getToken()).then( async (res:[Post]) => {
-      this.listPost = res.sort((a,b) => <any>new Date(b.createdAt) - <any>new Date(a.createdAt)); //Ordenamos por los mas recientes
+      this.listPost = res;
       if(this.listPost.length > 0){
         for(let post of this.listPost){
           //Obtiene Imagen de Post
           await this.postSrv.getPostImage(this.authSrv.getToken(), post.imgURL).then( imgUrl => {
-            if(!imgUrl.error){
+            console.log(imgUrl);
+            if(imgUrl != '' && !imgUrl.error){
               let reader = new FileReader();
               reader.readAsDataURL(imgUrl);
               reader.onload = (_event) => {
