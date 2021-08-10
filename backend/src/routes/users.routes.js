@@ -10,7 +10,7 @@ router.get('/userName', authJwt.verifyToken, userCtrl.getUserByName);
 router.get('/userId/:id', authJwt.verifyToken, userCtrl.getUserById);
 router.get('/usersById', authJwt.verifyToken, userCtrl.getUsersById);
 router.post('/updateProfile', authJwt.verifyToken, userCtrl.updateProfile);
-router.post('/updateProfileImages', authJwt.verifyToken, multer.uploadSingleConf, userCtrl.updateProfileImg);
+router.post('/updateProfileImages', authJwt.verifyToken, multer.uploadSingleImage, userCtrl.updateProfileImg);
 
 
 router.get('/getProfileImages', authJwt.verifyToken, userCtrl.getProfileImages);

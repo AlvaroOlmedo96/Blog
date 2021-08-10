@@ -2,7 +2,7 @@
     <div *ngIf="chargingData" class="text-center pt-5">
         <div class="spinner-grow text-primary mt-5 m-3" role="status" *ngFor="let repeat of [].constructor(3)"></div>
     </div>
-    <div class="row col-12 m-0 p-0 pt-5 justify-content-center appear" *ngIf="!chargingData">
+    <div class="row col-12 m-0 p-0 pt-md-5 justify-content-center appear" *ngIf="!chargingData">
         <!--ASIDE IZQUIERDO-->
         <div class="col-12 col-md-3 p-1">
             <div class="card shadow">
@@ -43,14 +43,12 @@
             </div>
             <hr>
             <div class="pl-lg-5 pr-lg-5 p-0">
-                <div class="card shadow m-2" *ngFor="let post of listPost; let i = index;" [style.background-color]="post.propietaryId == user._id ? '#B3E6FF' : 'white'">
+                <div class="card shadow mt-1 mb-1" *ngFor="let post of listPost; let i = index;" 
+                [style.background-color]="post.propietaryId == user._id ? '#ebf8ff' : 'white'">
                     <div class="row col-12 p-3 p-md-2 m-0 align-items-center">
                         <div class="col-3 col-sm-2 m-0 p-0 text-center" *ngIf="usersOfPost[i]">
                             <img *ngIf="usersOfPost[i].profileImg != ''" [src]="usersOfPost[i].profileImg" alt="Avatar" class="avatar img-fluid m-1 p-0">
                             <img *ngIf="usersOfPost[i].profileImg == ''" src="../../../assets/defaultProfile.png" alt="Avatar" class="avatar img-fluid m-1 p-0">
-                        </div>
-                        <div class="col-3 col-sm-2 m-0 p-0 text-center" *ngIf="!usersOfPost[i]">
-                            <img src="../../../assets/defaultProfile.png" alt="Avatar" class="avatar img-fluid m-1 p-0">
                         </div>
                         <div class="col-8 col-sm-9 m-0 p-0 align-items-center">
                             <h5 class="text-truncate">{{post.propietaryUsername}}</h5>
@@ -61,10 +59,14 @@
                             <p-menu #settingsPost [popup]="true" [model]="postSettings" [appendTo]="'body'"></p-menu> 
                         </div>
                     </div>
-                    <img src="{{post.imgURL}}" class="card-img-top img-fluid" alt="{{post.imgURL}}">
-                    <div class="card-body">
+                    
+                    <div *ngIf="post.imgURL != ''" class="col-12 row m-0 p-0 justify-content-center" (click)="zoomPostImage(post)" style="cursor: pointer;">
+                        <img src="{{post.imgURL}}" class="p-0 card-img-top img-fluid" alt="{{post.imgURL}}" style="object-fit: cover; max-width: 100%;">
+                    </div>
+                    <div class="card-body p-2">
                         <h5 class="card-title">{{post.title}}</h5>
                         <h6 class="card-text">{{post.description}}</h6>
+                        <hr>
                         <h6 class="row col-12 m-0 p-0 mb-1">
                             <i class="col-4 m-0 p-0 pi pi-heart" style="cursor: pointer;"><span> {{post.likes}}</span></i>
                             <a class="col-8 m-0 p-0 text-right text-secondary font-weight-light" style="cursor: pointer;">{{post.comments.length}} Comentarios</a>
@@ -85,6 +87,12 @@
 <!--BARRA DE CONTACTOS-->
 <p-panelMenu class="d-block d-md-none floatingContactsBar p-1" #chatsPanelMenu [model]="chatMenuSettings" [style]="{'width':'300px'}"></p-panelMenu>
 
+<p-dialog header="{{selectedPost.propietaryUsername}}" position="top" [(visible)]="displayZoomPost" [modal]="true" [style]="modalWidth" 
+[baseZIndex]="10000" [draggable]="true" [resizable]="false">
+    <div class="form-group text-center">
+        <img [src]="selectedPost.imgURL" alt="{{selectedPost.imgURL}}" class="img-fluid rounded">
+    </div>
+</p-dialog>
 
 <!--MODAL CREAR PUBLICACIÓN-->
 <p-dialog header="Crear una publicación" position="top" [(visible)]="displayCreatePostModal" [modal]="true" [style]="modalWidth" 
@@ -92,16 +100,51 @@
     <form [formGroup]="postForm" (ngSubmit)="createPost()">
         <div class="form-group">
             <input type="text" autocomplete="off" class="form-control mb-1" id="title" placeholder="Título" formControlName="title">
-            <textarea class="form-control" rows="5" cols="50" maxlength="300" placeholder="¿Sobre qué quieres hablar?" style="resize: none;" formControlName="description"></textarea>
+            <textarea class="form-control" rows="3" cols="50" maxlength="300" placeholder="¿Sobre qué quieres hablar?" style="resize: none;" formControlName="description"></textarea>
+        </div>
+        <!--Previsualización files-->
+        <div>
+            <div *ngIf="compressingFile" class="text-center">
+                <p class="p-0 m-0">Comprimiendo archivo...</p>
+                <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+            </div>
+            <div *ngIf="fileOverLimit" class="text-center">
+                <p-message severity="error" text='{{uploadFileErrorMsg}}'></p-message>
+            </div>
+            <div class="form-group row m-0 p-0 justify-content-center">
+                <div class="col-10">
+                    <image-cropper
+                        [imageChangedEvent]="imgChangeEvt" 
+                        [maintainAspectRatio]="true" 
+                        [aspectRatio]="4 / 4"
+                        [resizeToWidth]="1024" 
+                        format="jpeg" 
+                        (imageCropped)="cropImg($event)" 
+                        (imageLoaded)="imgLoad()"
+                        (cropperReady)="initCropper()" 
+                        (loadImageFailed)="imgFailed()">
+                    </image-cropper>
+                </div>
+                <span class="col-12 text-center">Last size:{{uploadedImage.lastSize}} - New size:{{uploadedImage.newSize}}</span>
+            </div>
         </div>
         <hr>
         <div class="text-right row col-12 m-0 p-0 justify-content-center">
-            <div class="col-6 col-md-12 m-0 text-center align-content-center">
-                <button pButton pRipple type="button" icon="pi pi-image" (click)="openImageSelector()" class="p-button-rounded m-1"></button>
-                <button pButton pRipple type="button" icon="pi pi-video" class="p-button-rounded m-1"></button>
-                <button pButton pRipple type="button" icon="pi pi-file" class="p-button-rounded m-1"></button>
+            <div class="col-12 mb-2 text-center align-content-center">
+                <button pButton pRipple type="button" icon="pi pi-link" class="p-button-rounded m-1">
+                    
+                </button>
+                <button pButton pRipple type="button" icon="pi pi-image" (click)="openFile()" class="p-button-rounded m-1" [disabled]="compressingFile">
+                    <input id="postImg" type="file" accept="image/*" style="display:none" (change)="onChangeImage($event)">
+                </button>
+                <button pButton pRipple type="button" icon="pi pi-video" class="p-button-rounded m-1">
+                    
+                </button>
+                <button pButton pRipple type="button" icon="pi pi-file" class="p-button-rounded m-1">
+                    
+                </button>
             </div>
-            <div class="col-6 col-md-12 p-0 text-center">
+            <div class="col-12 p-0 text-center">
                 <button class="btn btn-info m-1" (click)="displayCreatePostModal=false">Cancelar</button>
                 <button type="submit" class="btn btn-primary m-1 align-middle" (click)="createPost()" [disabled]="isPosting">
                     <i class="pi pi-spin pi-spinner" style="font-size: 1rem" *ngIf="isPosting"></i> Publicar

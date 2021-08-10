@@ -96,7 +96,7 @@ export class AuthService {
       path: imageURL.replace('src/','').replace('public/','')
     }
     if(imageURL != '' && imageURL != null && imageURL != undefined){
-      return this.http.get(`${this.url}/api/uploads/getProfileImages`, { params: params, headers: headers, responseType: 'blob' }).toPromise().then( (img:any) => {
+      return this.http.get(`${this.url}/api/uploads/profile/getProfileImages`, { params: params, headers: headers, responseType: 'blob' }).toPromise().then( (img:any) => {
         return img;
       }).catch( error => {
         return error;

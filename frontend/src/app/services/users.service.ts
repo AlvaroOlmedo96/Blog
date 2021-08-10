@@ -64,7 +64,8 @@ export class UsersService {
     const headers = {[headerType]: credentials.token};
     const params = {
       id: credentials.userId,
-      imageType: imageType
+      imageType: imageType,
+      originImage: 'profile'
     }
     return await this.http.post(`${this.url}/api/users/updateProfileImages`, file, { params: params, headers: headers}).toPromise().then( res => {
         return res;

@@ -33,6 +33,7 @@
     "bootstrap": "^4.5.0",
     "express": "^4.15.2",
     "ngx-image-compress": "^11.0.3",
+    "ngx-image-cropper": "^4.0.1",
     "ngx-socket-io": "^4.1.0",
     "primeicons": "^4.1.0",
     "primeng": "^11.4.2",

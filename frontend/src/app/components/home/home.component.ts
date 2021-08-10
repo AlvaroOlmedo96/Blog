@@ -6,6 +6,7 @@ import { MenuItem, MessageService } from 'primeng/api';
 import { Post } from 'src/app/models/posts.model';
 import { User } from 'src/app/models/user.model';
 import { AuthService } from 'src/app/services/auth.service';
+import { BlobImageService } from 'src/app/services/blobImages.service';
 import { PostsService } from 'src/app/services/posts.service';
 import { SocketWebService } from 'src/app/services/socket-web.service';
 import { UsersService } from 'src/app/services/users.service';
@@ -27,6 +28,7 @@ export class HomeComponent implements OnInit {
   profileImg: string = '';
   profileCoverImg: string = '';
   chargingData:boolean = true;
+  uploadFileErrorMsg:string = '';
 
   listPost:Array<Post> = [];
   postSettings: MenuItem[];
@@ -42,7 +44,7 @@ export class HomeComponent implements OnInit {
   
   
   constructor(@Inject(PLATFORM_ID) platformId: Object, private authSrv: AuthService, private postSrv:PostsService, private userSrv: UsersService,
-  private socketSrv: SocketWebService, private messageService: MessageService, private formBuilder: FormBuilder, private imageCompress: NgxImageCompressService) {
+  private socketSrv: SocketWebService, private messageService: MessageService, private formBuilder: FormBuilder, private bImgSrv: BlobImageService) {
     this.isBrowser = isPlatformBrowser(platformId);
 
     socketSrv.callback.subscribe( res => {
@@ -89,6 +91,7 @@ export class HomeComponent implements OnInit {
   async initCharge(){
     await this.getProfile();
     await this.getPosts();
+    await console.log("TODOS LOS POST CARGADOS", this.usersOfPost.length, this.listPost.length);
     
     this.chargingData = false;
   }
@@ -119,33 +122,60 @@ export class HomeComponent implements OnInit {
   }
 
   async getPosts(){
+    let usersId = [];
     await this.postSrv.getPosts(this.authSrv.getToken()).then( async (res:[Post]) => {
       this.listPost = res.sort((a,b) => <any>new Date(b.createdAt) - <any>new Date(a.createdAt)); //Ordenamos por los mas recientes
-      let usersId = [];
       if(this.listPost.length > 0){
         for(let post of this.listPost){
+          //Obtiene Imagen de Post
+          await this.postSrv.getPostImage(this.authSrv.getToken(), post.imgURL).then( imgUrl => {
+            if(!imgUrl.error){
+              let reader = new FileReader();
+              reader.readAsDataURL(imgUrl);
+              reader.onload = (_event) => {
+                post.imgURL = reader.result.toString();
+              }
+            }else{
+              post.imgURL = '';
+            }
+          });
           usersId.push(post.propietaryId);
         }
-        await this.userSrv.getUsersById(this.authSrv.getToken(), usersId).then( async res => {
-          for(let user of res){
-            if(user.profileImg != '' && user.profileImg != null && user.profileImg != undefined){
-              await this.authSrv.getProfileImg(user.profileImg).then( img => {
-                let reader = new FileReader();
-                if(!img.error){ 
-                  reader.readAsDataURL(img);
-                  reader.onload = (_event) => {
-                    user.profileImg = reader.result.toString();
-                  }
-                }else{user.profileImg = '';}
-                this.usersOfPost.push(user);
-              });
-            }else{
-              this.usersOfPost.push(user);
-            }
-          };
-        });
       }
     });
+
+    //Obtiene userInfo de cada Post
+    await this.userSrv.getUsersById(this.authSrv.getToken(), usersId).then( async res => {
+      console.log(res);
+      for(let user of res){
+        if(user.profileImg != '' && user.profileImg != null && user.profileImg != undefined){
+          await this.authSrv.getProfileImg(user.profileImg).then( img => {
+            let reader = new FileReader();
+            if(!img.error){ 
+              reader.readAsDataURL(img);
+              reader.onload = (_event) => {
+                user.profileImg = reader.result.toString();
+              }
+            }else{user.profileImg = '';}
+            this.usersOfPost.push(user);
+          });
+        }else{
+          this.usersOfPost.push(user);
+        }
+      };
+    });
+
+  }
+
+  selectedPost:any = {
+    imgURL:''
+  };
+  displayZoomPost:boolean = false;
+  //Hace zoom
+  zoomPostImage(post){
+    console.log(post);
+    this.selectedPost = post;
+    this.displayZoomPost = true;
   }
 
   showCreatePostModal(){
@@ -157,11 +187,20 @@ export class HomeComponent implements OnInit {
     if(this.postForm.valid){
       let testForm = {
         title: this.postForm.controls['title'].value,
-        imgURL: this.postForm.controls['imgURL'].value, 
+        imgURL: '', 
         description: this.postForm.controls['description'].value,
         likes: 0,
         propietaryId: this.user._id,
         propietaryUsername: this.user.username
+      }
+      console.log("IMGFORM", this.postForm.controls['imgURL'].value);
+      if(this.postForm.controls['imgURL'].value != '' && this.postForm.controls['imgURL'].value != null){
+        const formData = new FormData();
+        formData.append('file', this.postForm.controls['imgURL'].value);
+        await this.postSrv.uploadPostImage(this.authSrv.getToken(), this.user._id, formData).then( res => {
+          console.log(res);
+          testForm.imgURL = res.postImgURL;
+        });
       }
       await this.postSrv.createPost(this.authSrv.getToken(), testForm).then( res => {
         this.isPosting = false;
@@ -176,15 +215,60 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  openImageSelector(){
-    this.imageCompress.uploadFile().then(({image, orientation}) => {
-      console.warn('Size in bytes was:', this.imageCompress.byteCount(image));
-      this.imageCompress.compressFile(image, orientation, 50, 50).then(
-        result => {
-          console.warn('Size in bytes is now:', this.imageCompress.byteCount(result));
-        }
-      );
+
+  openFile(){
+    document.getElementById("postImg").click();
+  }
+
+  imgChangeEvt: any = '';
+  cropImgPreview: any = '';
+  uploadedImage = {imgURL:'', lastSize:'', newSize:''};
+  compressingFile: boolean = false;
+  fileOverLimit: boolean = false;
+  onChangeImage(event){
+    this.imgChangeEvt = event;
+    this.fileOverLimit = false;
+    this.compressingFile = true;
+  }
+
+  cropImg(event){//NO BORRAR NECESARIO PARA IMAGE-CROPPER
+    this.cropImgPreview = this.bImgSrv.cropImage(event);
+    console.log("cropImg");
+    let file = this.imgChangeEvt.target.files[0];
+    let filename = file['name'];
+    let quality = { ratio:100, quality: 50};
+    this.bImgSrv.compressFile(this.cropImgPreview, -1, quality.ratio, quality.quality, filename).then( img => {
+      if(!img.overLimit){
+        this.uploadedImage.imgURL = img.imgString;
+        this.uploadedImage.lastSize = img.lastSize;
+        this.uploadedImage.newSize = img.newSize;
+        this.postForm.controls['imgURL'].setValue(img.imgFile);
+      }else{
+        console.warn("Archivo demasiado grande");
+        this.fileOverLimit = true;
+        this.uploadFileErrorMsg = 'Archivo demasiado grande. El archivo debe ocupar 5MB o menos';
+      }
+      this.compressingFile = false;
     });
+  }
+
+  initCropper() {//NO BORRAR NECESARIO PARA IMAGE-CROPPER
+    // init cropper
+    console.log("initCropper")
+    let file = this.imgChangeEvt.target.files[0];
+  }
+
+  imgLoad() { //NO BORRAR NECESARIO PARA IMAGE-CROPPER
+    // display cropper tool
+    console.log("imgLoad");
+  }
+  imgFailed() {//NO BORRAR NECESARIO PARA IMAGE-CROPPER
+      // error msg
+      console.log("imgFailed");
+      this.cropImgPreview = '';
+      this.fileOverLimit = true;
+      this.compressingFile = false;
+      this.uploadFileErrorMsg = 'Formato no admitido. Solo imagenes.'
   }
 
 }

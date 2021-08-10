@@ -14,7 +14,9 @@ export class NavbarComponent implements OnInit {
 
   @HostListener('window:click', ['$event']) 
   doSomething(event:any) {
-    this.isBtnCollapse = !document.getElementById('toggleBtn').classList.contains('collapsed');
+    if(event.target.id == 'toggleBtnNavbar'){
+      this.isBtnCollapse = !document.getElementById('toggleBtnNavbar').classList.contains('collapsed');
+    }
   }
 
   navbarSearchText:string = '';
@@ -43,7 +45,8 @@ export class NavbarComponent implements OnInit {
   }
 
   collapseNavbar(){
-    document.getElementById('toggleBtn').classList.add('collapsed');
+    this.isBtnCollapse = false;
+    document.getElementById('toggleBtnNavbar').classList.add('collapsed');
     document.getElementById('navbarSupportedContent').classList.remove('show');
   }
 

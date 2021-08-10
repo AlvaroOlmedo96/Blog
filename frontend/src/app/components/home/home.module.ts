@@ -17,6 +17,8 @@ import {FileUploadModule} from 'primeng/fileupload';
 import {MessageModule} from 'primeng/message';
 
 import {NgxImageCompressService} from 'ngx-image-compress';
+import { ImageCropperModule } from 'ngx-image-cropper';
+import { BlobImageService } from 'src/app/services/blobImages.service';
 
 const routes: Routes =[
   { path: '', component: HomeComponent },
@@ -42,10 +44,12 @@ const routes: Routes =[
     ButtonModule,
     TabMenuModule,
     FileUploadModule,
-    MessageModule
+    MessageModule,
+    ImageCropperModule
   ],
   providers: [
-    NgxImageCompressService
+    NgxImageCompressService,
+    BlobImageService
   ]
 })
 export class HomeModule { }

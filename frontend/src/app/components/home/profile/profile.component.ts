@@ -7,7 +7,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { PostsService } from 'src/app/services/posts.service';
 import { UsersService } from 'src/app/services/users.service';
 
-import {NgxImageCompressService} from 'ngx-image-compress';
+import { BlobImageService } from 'src/app/services/blobImages.service';
 
 @Component({
   selector: 'app-profile',
@@ -45,7 +45,7 @@ export class ProfileComponent implements OnInit {
   userPosts = [];
 
   constructor(@Inject(PLATFORM_ID) platformId: Object, private authSrv: AuthService, private postSrv:PostsService, private formBuilder: FormBuilder, 
-  private userSrv:UsersService, private imageCompress: NgxImageCompressService) { 
+  private userSrv:UsersService, private bImgSrv: BlobImageService) { 
     this.isBrowser = isPlatformBrowser(platformId);
 
     this.editProfileForm = this.formBuilder.group({
@@ -102,8 +102,24 @@ export class ProfileComponent implements OnInit {
   }
 
   async getMyPosts(){
-    this.postSrv.getPostsById(this.authSrv.getToken(), this.user.posts).then( res => {
+    this.postSrv.getPostsById(this.authSrv.getToken(), this.user.posts).then( async res => {
       this.userPosts = res;
+      for(let post of this.userPosts){
+        //Obtiene Imagen de Post
+        await this.postSrv.getPostImage(this.authSrv.getToken(), post.imgURL).then( async imgUrl => {
+          if(!imgUrl.error){
+            let reader = new FileReader();
+            reader.readAsDataURL(imgUrl);
+            reader.onload = async (_event) => {
+              post.imgURL = await reader.result.toString();
+            }
+          }else{
+            post.imgURL = '';
+          }
+        }).catch( error => {
+          console.log(error);
+        });
+      }
     }).catch( error => {
       this.userPosts = [];
     });
@@ -129,8 +145,7 @@ export class ProfileComponent implements OnInit {
   }
 
   onBasicUpload(event){
-    const file = event.target.files[0];
-    const filename = (file) ? file['name'] : '';
+    let file = event.target.files[0];
     let quality = { ratio:50, quality: 50};
     if(this.lastFileOpened == 'profileImgInput'){quality = { ratio:50, quality: 25};}
     if(this.lastFileOpened == 'coverImgInput'){quality = { ratio:50, quality: 70};}
@@ -139,46 +154,35 @@ export class ProfileComponent implements OnInit {
 
     //Solo se admiten imagenes
     if(file.type.indexOf('image') > -1){
+      let newFile = new File([file], file['name'], { type: 'image/jpeg' });//lo convertimos a jpeg para comprimir mejor
+      file = newFile;
+      const filename = (file) ? file['name'] : '';
       //Para previsualizar y comprimir
       var reader = new FileReader();
       reader.readAsDataURL(file); 
       reader.onload = (_event) => { 
         //Comprimimos imagen
-        console.warn('Antes de comprimir Size:', filename + '==>', this.imageCompress.byteCount(reader.result));
-        if(this.imageCompress.byteCount(reader.result) <= 5000000){ //Maximo 5MB
-          this.imageCompress.compressFile(reader.result.toString(), -1, quality.ratio, quality.quality).then( async result => {
-            console.warn('Después de comprimir Size:', filename + '==>', this.imageCompress.byteCount(result));
-            const resultBlob = await this.imageToBlob(result);
-            let finalFile = new File([resultBlob], filename, { type: 'image/jpeg' });
+        this.bImgSrv.compressFile(reader.result.toString(), -1, quality.ratio, quality.quality, filename).then( img => {
+          console.log(img);
+          if(!img.overLimit){
             if(this.lastFileOpened == 'profileImgInput'){ 
-              this.uploadImg.profileImg = result;
-              this.editProfileForm.controls['profileImg'].setValue(finalFile);
+              this.uploadImg.profileImg = img.imgString;
+              this.editProfileForm.controls['profileImg'].setValue(img.imgFile);
             }
             if(this.lastFileOpened == 'coverImgInput'){ 
-              this.uploadImg.profileCoverImg = result;
-              this.editProfileForm.controls['profileCoverImg'].setValue(finalFile);
+              this.uploadImg.profileCoverImg = img.imgString;
+              this.editProfileForm.controls['profileCoverImg'].setValue(img.imgFile);
             }
+          }else{
+            console.warn("Archivo demasiado grande");
             this.compressingFile = false;
-          });
-        }else{
-          console.warn("Archivo demasiado grande");
+            this.fileOverLimit = true;
+          }
+          
           this.compressingFile = false;
-          this.fileOverLimit = true;
-        }
+        });
       }
     }
-  }
-
-  imageToBlob(result){
-    const dataURI = result.split(',')[1]
-    const byteString = window.atob(dataURI);
-    const arrayBuffer = new ArrayBuffer(byteString.length);
-    const int8Array = new Uint8Array(arrayBuffer);
-    for (let i = 0; i < byteString.length; i++) {
-    int8Array[i] = byteString.charCodeAt(i);
-    }
-    const blob = new Blob([int8Array], { type: 'image/jpeg' });
-    return blob;
   }
 
   async updateProfile(){

@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
 app.use('/api/posts', postsRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);
-app.use('/api/uploads', authJwt.verifyToken, express.static(path.join(__dirname, '/public/uploads')), usersRoutes);
+app.use('/api/uploads/profile', authJwt.verifyToken, express.static(path.join(__dirname, '/public/uploads/profile')), usersRoutes);
 
 
 //Requiere esta configuracion para que funcione socket.io

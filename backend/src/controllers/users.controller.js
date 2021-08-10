@@ -17,18 +17,27 @@ export const getUsersById = async (req, res) => {
     try {
         const { idList } = req.query;
         let usersList = [];
-        console.log("LIST OF ID´S", [idList]);
-        if([idList] != undefined && [idList].length > 0){
-            for(let id of [idList]){
+        console.log("LIST OF ID´S", idList);
+        if(Array.isArray(idList)){
+            for(let id of idList){
                 const user = await User.findById(id);
                 if(user != null){
                     let finalUser = {username: user.username, email:user.email, _id: id, profileImg: user.profileImg };
                     usersList.push(finalUser);
                 }
             }
+        }else{
+            const user = await User.findById(idList);
+            if(user != null){
+                console.log(user);
+                let finalUser = {username: user.username, email:user.email, _id: idList, profileImg: user.profileImg };
+                usersList.push(finalUser);
+            }
         }
         console.log("LIST OF USERS");
         res.json(usersList);
+
+
     } catch (error) {
         res.status(500).json({msg: 'Server error'});
     }
@@ -86,7 +95,7 @@ export const updateProfile = async (req, res) => {
 //GET images
 export const getProfileImages = async (req, res) => {
     try {
-        const extensionFile = req.query.path.slice(-3);
+        let extensionFile = req.query.path.split('.').pop();
         const imagePath = path.join('src','public', req.query.path);
         await fs.stat( imagePath, (error, stat) => {
             if(error == null){
@@ -95,7 +104,7 @@ export const getProfileImages = async (req, res) => {
                     res.end(file);
                 });
             }else{
-                res.status(401).json({msg: 'File not found'});
+                res.status(301).json({msg: 'File not found'});
             }
         });
     } catch (error) {
