@@ -1,3 +1,5 @@
+import fs from 'fs';
+
 export function removeAccents(string = '') {
     string = string.normalize("NFD").replace(/\p{Diacritic}/gu, "");
     return string.replace(/a/g, '[a,á,à,ä]')

@@ -50,11 +50,6 @@ export class ProfileComponent implements OnInit {
   private userSrv:UsersService, private bImgSrv: BlobImageService, private socketSrv: SocketWebService) { 
     this.isBrowser = isPlatformBrowser(platformId);
 
-    socketSrv.cb_profileUpdated.subscribe( res => {
-      console.log("SOCKET cb_profileUpdated", res);
-      this.getProfile();
-    });
-
     this.editProfileForm = this.formBuilder.group({
       profileImg: new FormControl(''),
       profileCoverImg: new FormControl(''),
@@ -190,7 +185,6 @@ export class ProfileComponent implements OnInit {
               this.editProfileForm.controls['profileCoverImg'].setValue(img.imgFile);
             }
           }else{
-            console.warn("Archivo demasiado grande");
             this.compressingFile = false;
             this.fileOverLimit = true;
           }
@@ -235,7 +229,7 @@ export class ProfileComponent implements OnInit {
 
     await this.userSrv.updateProfile(body).then( res => {
       this.displayEditProfileModal = false;   
-      this.socketSrv.updateProfile(this.user._id);
+      this.getProfile();
     });
 
     this.isUpdatingProfile = false;
@@ -243,14 +237,13 @@ export class ProfileComponent implements OnInit {
   }
 
   lastPostSelected:any;
-  getPost(post){
+  getLastPost(post){
     this.lastPostSelected = post;
   } 
-  deletePost(){
+  async deletePost(){
     let post = this.lastPostSelected;
-    console.log(post);
-    this.postSrv.deletePost(this.authSrv.getToken(), post._id, post.propietaryId, post.imgURL).then( res => {
-      console.log(res);
+    await this.postSrv.deletePost(this.authSrv.getToken(), post._id, post.propietaryId, post.imgURL).then( async (res) => {
+      this.userPosts = this.userPosts.filter( (p) => { return p._id !== post._id; }); 
     });
   }
 

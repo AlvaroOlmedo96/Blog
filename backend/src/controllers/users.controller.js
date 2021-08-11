@@ -1,10 +1,12 @@
 import User from '../models/User.model';
+import Notifications from '../models/Notifications.model';
 import * as myJs from '../libs/myFunctions';
 import * as multer from '../middlewares/multer';
 import fs from 'fs';
 import path from 'path';
 import * as socketIO from '../middlewares/socketWeb';
 
+//Obtiene todos los usuarios
 export const getUsers = async (req, res) => {
     try {
         const users = await User.find();
@@ -14,6 +16,7 @@ export const getUsers = async (req, res) => {
     }
 }
 
+//Obtiene varios usuarios por ID
 export const getUsersById = async (req, res) => {
     try {
         const { idList } = req.query;
@@ -41,6 +44,7 @@ export const getUsersById = async (req, res) => {
     }
 }
 
+//Obtiene un usuario por ID
 export const getUserById = async (req, res) => {
     try {
         const users = await User.findById(req.params.postId);
@@ -50,8 +54,9 @@ export const getUserById = async (req, res) => {
     }
 }
 
+//Obtiene un usuario por username
 export const getUserByName = async (req, res) => {
-    try {
+    //try {
         var string = req.query.username.trim();
 
         if(string != '' && string != null && string != undefined){
@@ -59,18 +64,20 @@ export const getUserByName = async (req, res) => {
             const users = await User.find({ username: {$regex: normalizedString, $options: 'i'} }).collation({locale: "en", strength: 1});
             let finalUser = [];
             for(let r of users){
+                console.log("USER BUSCADO", r);
                 finalUser.push({
                     username: r.username, 
-                    id: r.id
+                    id: r.id,
+                    imgProfile: r.profileImg
                 });
             }
             res.json(finalUser);
         }else{
             res.status(400).json({msg: 'Search not valid '});
         }
-    } catch (error) {
-        res.status(500).json({msg: 'Server error'});
-    }
+    //} catch (error) {
+    //    res.status(500).json({msg: 'Server error'});
+    //}
 }
 
 //======UPDATE PROFILE===========
@@ -108,6 +115,17 @@ export const getProfileImages = async (req, res) => {
     } catch (error) {
         res.status(500).json({msg: 'Server error'});
     }
+}
+
+
+//PEDIR Solicitud de amistad
+export const friendRequest = async (req, res) => {
+    const {emiterUserId, receiverUserId, notification} = req.query;
+    const newNotification = new Notifications(notification);
+    const notificationSaved = await newPost.save();
+    const emiterUser = await User.findByIdAndUpdate(emiterUserId, {$push: {"notifications": {"send": notificationSaved._id.toString()} }});
+    const receiverUser = await User.findByIdAndUpdate(receiverUserId, {$push: {"notifications": {"receive": notificationSaved._id.toString()} }});
+    res.json({msg:"NOTIFICACION CREADA"});
 }
 
 

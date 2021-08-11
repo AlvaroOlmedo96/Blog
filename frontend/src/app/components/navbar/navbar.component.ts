@@ -56,16 +56,32 @@ export class NavbarComponent implements OnInit {
     });
   }
 
-  search(){
+  async search(event){
     if(this.navbarSearchText.trim().length > 0){
       const token = this.authSrv.getToken();
-      this.userSrv.getUserByName(token, this.navbarSearchText.toLowerCase()).then( res => {
+      await this.userSrv.getUserByName(token, this.navbarSearchText.toLowerCase()).then( async res => {
         if(res.length < 1){ this.recommendedListSearched = []; }
         if(res.length > 1){
           this.recommendedListSearched = res.slice(0, 4); //Limitamos el listado recomendado de busqueda de personas
         }else{
           this.recommendedListSearched = res;
         }
+        console.log("USERSBYNAME", this.recommendedListSearched);
+        await this.recommendedListSearched.forEach( async user => {
+          if(user.imgProfile != ''){
+            await this.authSrv.getProfileImg(user.imgProfile).then( img => {
+              if(!img.error){
+                let reader = new FileReader();
+                reader.readAsDataURL(img);
+                reader.onload = async (_event) => {
+                  user.imgProfile = await reader.result.toString();
+                }
+              }else{
+                user.imgProfile = '';
+              }
+            });
+          }
+        })
       });
     }else{
       this.recommendedListSearched = [];

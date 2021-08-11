@@ -7,7 +7,10 @@ export interface User{
     biography?: string,
     profileImg?: string,
     profileCoverImg?: string,
-    notifications?: [],
+    notifications?: [{
+        send: string,
+        receive: string
+    }],
     chats?: [],
     contacts?: [],
     posts?: [],

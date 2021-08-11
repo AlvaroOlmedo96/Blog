@@ -37,7 +37,7 @@
                             <div class="col-12 row m-0 p-0">
                                 <span class="col-10 small-text">{{post.createdAt | date:'mediumDate'}}</span>
                                 <div class="text-right col-2">
-                                    <button class="btn p-0" (click)="[settingsPost.toggle($event), getPost(post)]"><i class="pi pi-ellipsis-h"></i></button>
+                                    <button class="btn p-0" (click)="[settingsPost.toggle($event), getLastPost(post)]"><i class="pi pi-ellipsis-h"></i></button>
                                     <p-menu #settingsPost [popup]="true" [model]="postSettings" [appendTo]="'body'"></p-menu> 
                                 </div>
                             </div>

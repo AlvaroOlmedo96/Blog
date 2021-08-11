@@ -98,7 +98,6 @@ export const getPostsById = async (req, res) => {
             }
         });
     }else{
-        socketIO.getSocket().emit('userConnection', users);
         res.json({deletedPost:deletedPost, deletedUserPost:deletedUserPost, msg: "Sin imagen. Eliminado correctamente"});
     }
 

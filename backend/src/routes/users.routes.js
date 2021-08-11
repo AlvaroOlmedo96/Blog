@@ -12,7 +12,8 @@ router.get('/usersById', authJwt.verifyToken, userCtrl.getUsersById);
 router.post('/updateProfile', authJwt.verifyToken, userCtrl.updateProfile);
 router.post('/updateProfileImages', authJwt.verifyToken, multer.uploadSingleImage, userCtrl.updateProfileImg);
 
-
 router.get('/getProfileImages', authJwt.verifyToken, userCtrl.getProfileImages);
+
+router.post('/friendRequest', authJwt.verifyToken, userCtrl.friendRequest);
 
 export default router;

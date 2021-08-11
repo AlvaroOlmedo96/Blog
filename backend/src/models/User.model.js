@@ -20,7 +20,10 @@ const userSchema = new Schema({
     biography: String,
     profileImg: String,
     profileCoverImg: String,
-    notifications: [],
+    notifications: [{
+        send: String,
+        receive: String
+    }],
     chats: [],
     contacts: [],
     posts: [],
