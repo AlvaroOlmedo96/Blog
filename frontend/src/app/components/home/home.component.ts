@@ -29,6 +29,11 @@ export class HomeComponent implements OnInit {
   profileCoverImg: string = '';
   chargingData:boolean = true;
   uploadFileErrorMsg:string = '';
+  imgChangeEvt: any = '';
+  cropImgPreview: any = '';
+  uploadedImage = {imgURL:'', lastSize:'', newSize:''};
+  compressingFile: boolean = false;
+  fileOverLimit: boolean = false;
 
   listPost:Array<Post> = [];
   postSettings: MenuItem[];
@@ -40,6 +45,8 @@ export class HomeComponent implements OnInit {
 
   usersOfPost:any = [];
 
+  friendsList = [];
+
   chatMenuSettings: MenuItem[];
   
   
@@ -47,9 +54,11 @@ export class HomeComponent implements OnInit {
   private socketSrv: SocketWebService, private messageService: MessageService, private formBuilder: FormBuilder, private bImgSrv: BlobImageService) {
     this.isBrowser = isPlatformBrowser(platformId);
 
-    socketSrv.callback.subscribe( res => {
-      console.log("CALLBACK SOCKET", res);
-      this.messageService.add({severity: 'success', summary:`${res.username}`, detail:`Se ha conectado.`});
+    socketSrv.cb_userConnection.subscribe( res => {
+      console.log("SOCKET cb_userConnection", res);
+      res.forEach(user => {
+        this.messageService.add({severity: 'success', summary:`${user.username}`, detail:`Se ha conectado.`});
+      });
     });
 
     this.postSettings = [
@@ -91,15 +100,20 @@ export class HomeComponent implements OnInit {
   async initCharge(){
     await this.getProfile();
     await this.getPosts();
-    await console.log("TODOS LOS POST CARGADOS", this.usersOfPost.length, this.listPost.length);
-    
+    await this.getAllUsers();
     this.chargingData = false;
   }
 
+  async getAllUsers(){
+    await this.userSrv.getUsers(this.authSrv.getToken()).then( res => {
+      this.friendsList = res;
+    });
+  }
+
   async getProfile(){
-    
     await this.authSrv.getProfile().then( res => {
       this.user = res.user;
+      this.socketSrv.createUserSocketId(this.user._id);//Creamos un socketID para el usuario
       let reader = new FileReader(); let reader2 = new FileReader();
       if(res.profileImgURL != null && res.profileImgURL != ''){ 
         reader.readAsDataURL(res.profileImgURL);
@@ -115,10 +129,6 @@ export class HomeComponent implements OnInit {
         }
       }else{this.profileCoverImg = '';}
     });
-    
-    //Enviamos esto al socket.io para notificar nueva conexión a todos los usuarios
-    const userConection = {username:this.user.username, email:this.user.email};
-    this.socketSrv.emitEvent(userConection);
   }
 
   async getPosts(){
@@ -129,7 +139,6 @@ export class HomeComponent implements OnInit {
         for(let post of this.listPost){
           //Obtiene Imagen de Post
           await this.postSrv.getPostImage(this.authSrv.getToken(), post.imgURL).then( imgUrl => {
-            console.log(imgUrl);
             if(imgUrl != '' && !imgUrl.error){
               let reader = new FileReader();
               reader.readAsDataURL(imgUrl);
@@ -147,7 +156,6 @@ export class HomeComponent implements OnInit {
 
     //Obtiene userInfo de cada Post
     await this.userSrv.getUsersById(this.authSrv.getToken(), usersId).then( async res => {
-      console.log(res);
       for(let user of res){
         if(user.profileImg != '' && user.profileImg != null && user.profileImg != undefined){
           await this.authSrv.getProfileImg(user.profileImg).then( img => {
@@ -168,17 +176,18 @@ export class HomeComponent implements OnInit {
 
   }
 
-  selectedPost:any = {
-    imgURL:''
-  };
-  displayZoomPost:boolean = false;
-  //Hace zoom
-  zoomPostImage(post){
-    console.log(post);
-    this.selectedPost = post;
-    this.displayZoomPost = true;
+  resetCreatePostModal(){
+    this.displayCreatePostModal=false;
+    this.isPosting = true;
+    this.imgChangeEvt = '';
+    this.cropImgPreview = '';
+    this.uploadedImage.imgURL = '', this.uploadedImage.lastSize = ''; this.uploadedImage.newSize = '';
+    this.compressingFile = false;
+    this.fileOverLimit = false;
+    this.postForm.controls['imgURL'].setValue('');
+    this.postForm.controls['title'].setValue('');
+    this.postForm.controls['description'].setValue('');
   }
-
   showCreatePostModal(){
     this.displayCreatePostModal = true;
   }
@@ -206,6 +215,7 @@ export class HomeComponent implements OnInit {
       await this.postSrv.createPost(this.authSrv.getToken(), testForm).then( res => {
         this.isPosting = false;
         this.displayCreatePostModal = false;
+        this.resetCreatePostModal();
       }).catch( error => {
         console.log(error);
         this.isPosting = false;
@@ -221,11 +231,7 @@ export class HomeComponent implements OnInit {
     document.getElementById("postImg").click();
   }
 
-  imgChangeEvt: any = '';
-  cropImgPreview: any = '';
-  uploadedImage = {imgURL:'', lastSize:'', newSize:''};
-  compressingFile: boolean = false;
-  fileOverLimit: boolean = false;
+  
   onChangeImage(event){
     this.imgChangeEvt = event;
     this.fileOverLimit = false;
@@ -234,10 +240,13 @@ export class HomeComponent implements OnInit {
 
   cropImg(event){//NO BORRAR NECESARIO PARA IMAGE-CROPPER
     this.cropImgPreview = this.bImgSrv.cropImage(event);
-    console.log("cropImg");
+    console.log("Croping Image...");
+    this.compressingFile = true;
+
     let file = this.imgChangeEvt.target.files[0];
     let filename = file['name'];
     let quality = { ratio:100, quality: 50};
+    
     this.bImgSrv.compressFile(this.cropImgPreview, -1, quality.ratio, quality.quality, filename).then( img => {
       if(!img.overLimit){
         this.uploadedImage.imgURL = img.imgString;
@@ -252,24 +261,23 @@ export class HomeComponent implements OnInit {
       this.compressingFile = false;
     });
   }
-
+  //CROPE CONFIG
   initCropper() {//NO BORRAR NECESARIO PARA IMAGE-CROPPER
     // init cropper
     console.log("initCropper")
     let file = this.imgChangeEvt.target.files[0];
   }
-
   imgLoad() { //NO BORRAR NECESARIO PARA IMAGE-CROPPER
     // display cropper tool
     console.log("imgLoad");
   }
   imgFailed() {//NO BORRAR NECESARIO PARA IMAGE-CROPPER
-      // error msg
-      console.log("imgFailed");
-      this.cropImgPreview = '';
-      this.fileOverLimit = true;
-      this.compressingFile = false;
-      this.uploadFileErrorMsg = 'Formato no admitido. Solo imagenes.'
+    // error msg
+    console.log("imgFailed");
+    this.cropImgPreview = '';
+    this.fileOverLimit = true;
+    this.compressingFile = false;
+    this.uploadFileErrorMsg = 'Formato no admitido. Solo imagenes.'
   }
 
 }

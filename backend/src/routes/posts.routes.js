@@ -8,6 +8,7 @@ import * as authJwt from '../middlewares/authJwt';
 router.post('/', authJwt.verifyToken, postsCtrl.createPost);
 router.get('/', authJwt.verifyToken, postsCtrl.getPosts);
 router.get('/postsById', authJwt.verifyToken, postsCtrl.getPostsById);
+router.delete('/deletePostById', authJwt.verifyToken, postsCtrl.deletePostById);
 
 router.post('/uploadPostImage', authJwt.verifyToken, multer.uploadSingleImage, postsCtrl.uploadPostImage);
 router.get('/imagesPosts', authJwt.verifyToken, postsCtrl.getImagesOfPosts);

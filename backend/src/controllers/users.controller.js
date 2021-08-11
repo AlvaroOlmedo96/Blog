@@ -3,13 +3,14 @@ import * as myJs from '../libs/myFunctions';
 import * as multer from '../middlewares/multer';
 import fs from 'fs';
 import path from 'path';
+import * as socketIO from '../middlewares/socketWeb';
 
 export const getUsers = async (req, res) => {
     try {
         const users = await User.find();
         res.json(users);
     } catch (error) {
-        res.status(500).json({msg: 'Server error'});
+        res.status(500).json({msg: 'Server error of getUsers'});
     }
 }
 
@@ -17,7 +18,6 @@ export const getUsersById = async (req, res) => {
     try {
         const { idList } = req.query;
         let usersList = [];
-        console.log("LIST OF ID´S", idList);
         if(Array.isArray(idList)){
             for(let id of idList){
                 const user = await User.findById(id);
@@ -29,12 +29,10 @@ export const getUsersById = async (req, res) => {
         }else{
             const user = await User.findById(idList);
             if(user != null){
-                console.log(user);
                 let finalUser = {username: user.username, email:user.email, _id: idList, profileImg: user.profileImg };
                 usersList.push(finalUser);
             }
         }
-        console.log("LIST OF USERS");
         res.json(usersList);
 
 

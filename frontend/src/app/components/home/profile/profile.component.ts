@@ -8,6 +8,7 @@ import { PostsService } from 'src/app/services/posts.service';
 import { UsersService } from 'src/app/services/users.service';
 
 import { BlobImageService } from 'src/app/services/blobImages.service';
+import { SocketWebService } from 'src/app/services/socket-web.service';
 
 @Component({
   selector: 'app-profile',
@@ -43,16 +44,28 @@ export class ProfileComponent implements OnInit {
   lastFileOpened = '';
 
   userPosts = [];
+  postSettings: MenuItem[];
 
   constructor(@Inject(PLATFORM_ID) platformId: Object, private authSrv: AuthService, private postSrv:PostsService, private formBuilder: FormBuilder, 
-  private userSrv:UsersService, private bImgSrv: BlobImageService) { 
+  private userSrv:UsersService, private bImgSrv: BlobImageService, private socketSrv: SocketWebService) { 
     this.isBrowser = isPlatformBrowser(platformId);
+
+    socketSrv.cb_profileUpdated.subscribe( res => {
+      console.log("SOCKET cb_profileUpdated", res);
+      this.getProfile();
+    });
 
     this.editProfileForm = this.formBuilder.group({
       profileImg: new FormControl(''),
       profileCoverImg: new FormControl(''),
       biography: new FormControl(this.user.biography),
     });
+
+    this.postSettings = [
+      {label: 'Eliminar post', icon: 'pi pi-trash', command: () => {
+        this.deletePost();
+      }}
+    ];
 
   }
 
@@ -102,7 +115,7 @@ export class ProfileComponent implements OnInit {
   }
 
   async getMyPosts(){
-    this.postSrv.getPostsById(this.authSrv.getToken(), this.user.posts).then( async res => {
+    await this.postSrv.getPostsById(this.authSrv.getToken(), this.user.posts).then( async res => {
       this.userPosts = res;
       for(let post of this.userPosts){
         //Obtiene Imagen de Post
@@ -111,13 +124,14 @@ export class ProfileComponent implements OnInit {
             let reader = new FileReader();
             reader.readAsDataURL(imgUrl);
             reader.onload = async (_event) => {
-              post.imgURL = await reader.result.toString();
+              post.imgURLBlob = await reader.result.toString();
             }
           }else{
-            post.imgURL = '';
+            post.imgURLBlob = '';
           }
         }).catch( error => {
           console.log(error);
+          post.imgURLBlob = '';
         });
       }
     }).catch( error => {
@@ -221,10 +235,23 @@ export class ProfileComponent implements OnInit {
 
     await this.userSrv.updateProfile(body).then( res => {
       this.displayEditProfileModal = false;   
+      this.socketSrv.updateProfile(this.user._id);
     });
 
     this.isUpdatingProfile = false;
     this.resetProfileModal();
+  }
+
+  lastPostSelected:any;
+  getPost(post){
+    this.lastPostSelected = post;
+  } 
+  deletePost(){
+    let post = this.lastPostSelected;
+    console.log(post);
+    this.postSrv.deletePost(this.authSrv.getToken(), post._id, post.propietaryId, post.imgURL).then( res => {
+      console.log(res);
+    });
   }
 
 }

@@ -79,6 +79,14 @@
         <div class="d-none d-md-block col-12 col-md-3 p-1">
             <div class="card shadow p-1">
                 <h5 class="text-center">Chats</h5>
+                <div *ngFor="let friend of friendsList">
+                    <div>
+                        <span>
+                            <i class="pi pi-spin pi-circle-off" style="font-size: 1rem; background-color: rgb(0, 206, 178);"></i> 
+                            {{friend.username}}
+                        </span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -87,16 +95,9 @@
 <!--BARRA DE CONTACTOS-->
 <p-panelMenu class="d-block d-md-none floatingContactsBar p-1" #chatsPanelMenu [model]="chatMenuSettings" [style]="{'width':'300px'}"></p-panelMenu>
 
-<p-dialog header="{{selectedPost.propietaryUsername}}" position="top" [(visible)]="displayZoomPost" [modal]="true" [style]="modalWidth" 
-[baseZIndex]="10000" [draggable]="true" [resizable]="false">
-    <div class="form-group text-center">
-        <img [src]="selectedPost.imgURL" alt="{{selectedPost.imgURL}}" class="img-fluid rounded">
-    </div>
-</p-dialog>
-
 <!--MODAL CREAR PUBLICACIÓN-->
 <p-dialog header="Crear una publicación" position="top" [(visible)]="displayCreatePostModal" [modal]="true" [style]="modalWidth" 
-[baseZIndex]="10000" [draggable]="true" [resizable]="false">
+[baseZIndex]="10000" [draggable]="true" [resizable]="false" [closable]="false">
     <form [formGroup]="postForm" (ngSubmit)="createPost()">
         <div class="form-group">
             <input type="text" autocomplete="off" class="form-control mb-1" id="title" placeholder="Título" formControlName="title">
@@ -108,7 +109,7 @@
                 <p class="p-0 m-0">Comprimiendo archivo...</p>
                 <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
             </div>
-            <div *ngIf="fileOverLimit" class="text-center">
+            <div *ngIf="fileOverLimit" class="text-center appear">
                 <p-message severity="error" text='{{uploadFileErrorMsg}}'></p-message>
             </div>
             <div class="form-group row m-0 p-0 justify-content-center">
@@ -125,27 +126,27 @@
                         (loadImageFailed)="imgFailed()">
                     </image-cropper>
                 </div>
-                <span class="col-12 text-center">Last size:{{uploadedImage.lastSize}} - New size:{{uploadedImage.newSize}}</span>
+                <span class="col-12 text-center appear" *ngIf="!compressingFile && cropImgPreview != ''">Last size:{{uploadedImage.lastSize}} - New size:{{uploadedImage.newSize}}</span>
             </div>
         </div>
         <hr>
         <div class="text-right row col-12 m-0 p-0 justify-content-center">
             <div class="col-12 mb-2 text-center align-content-center">
-                <button pButton pRipple type="button" icon="pi pi-link" class="p-button-rounded m-1">
+                <button pButton pRipple type="button" icon="pi pi-link" class="p-button-rounded m-1" [disabled]="true">
                     
                 </button>
                 <button pButton pRipple type="button" icon="pi pi-image" (click)="openFile()" class="p-button-rounded m-1" [disabled]="compressingFile">
                     <input id="postImg" type="file" accept="image/*" style="display:none" (change)="onChangeImage($event)">
                 </button>
-                <button pButton pRipple type="button" icon="pi pi-video" class="p-button-rounded m-1">
+                <button pButton pRipple type="button" icon="pi pi-video" class="p-button-rounded m-1" [disabled]="true">
                     
                 </button>
-                <button pButton pRipple type="button" icon="pi pi-file" class="p-button-rounded m-1">
+                <button pButton pRipple type="button" icon="pi pi-file" class="p-button-rounded m-1" [disabled]="true">
                     
                 </button>
             </div>
             <div class="col-12 p-0 text-center">
-                <button class="btn btn-info m-1" (click)="displayCreatePostModal=false">Cancelar</button>
+                <button class="btn btn-info m-1" (click)="resetCreatePostModal()">Cancelar</button>
                 <button type="submit" class="btn btn-primary m-1 align-middle" (click)="createPost()" [disabled]="isPosting">
                     <i class="pi pi-spin pi-spinner" style="font-size: 1rem" *ngIf="isPosting"></i> Publicar
                 </button>

@@ -30,11 +30,9 @@ export class PostsService {
   async getPostsById(token, idList:Array<string>){
     const headerType = 'x-access-token';
     const headers = {[headerType]: token};
-    console.log("IDLIST", idList);
     const params = {
       idList: idList
     }
-    console.log("IDLIST", params);
     return await this.http.get(`${this.url}/api/posts/postsById`, {params: params, headers: headers }).toPromise().then( res => {
         return res;
     }).catch( error => {
@@ -84,6 +82,26 @@ export class PostsService {
       let img = '';
       return img;
     }
+  }
+
+  async deletePost(token, postId, userId, imagePath){
+    const headerType = 'x-access-token';
+    const headers = {[headerType]: token};
+
+    const params = {
+      postId: postId,
+      userId: userId,
+      imagePath: imagePath.replace('src/','').replace('public/','')
+    }
+
+    console.log("PARAMS", params);
+    
+    return this.http.delete(`${this.url}/api/posts/deletePostById`, { params: params, headers: headers }).toPromise().then( (res:any) => {
+      return res;
+    }).catch( error => {
+      return error;
+    });
+    
   }
 
 

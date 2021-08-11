@@ -8,6 +8,7 @@ import authRoutes from './routes/auth.routes';
 import usersRoutes from './routes/users.routes';
 import path from 'path';
 import * as authJwt from './middlewares/authJwt';
+import * as socketIO from './middlewares/socketWeb';
 
 const app = express();
 
@@ -33,34 +34,12 @@ app.get('/', (req, res) => {
 app.use('/api/posts', postsRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);
-app.use('/api/uploads/profile', authJwt.verifyToken, express.static(path.join(__dirname, '/public/uploads/profile')), usersRoutes);
+app.use('/api/uploads/profile', authJwt.verifyToken, express.static(path.join(__dirname, '/public/uploads')), usersRoutes);
 
 
 //Requiere esta configuracion para que funcione socket.io
 const server = require('http').createServer(app);
-const io = require('socket.io')(server, {
-    cors: {
-        origins: whitelist
-    }
-});
-//------Configuramos Socket.io-------
-io.on('connection', (socket) => {
-    const idHandSocket = socket.id; //Cada vez que alguien se conecta se genera un Id único.
-    const { nameRoom } = socket.handshake.query;
-
-    const sala = socket.join(nameRoom);
-
-    console.log(`SOCKET.IO === Se ha conectado el dispositivo ${idHandSocket} en la sala ${sala}`);
-
-    socket.on('event', (res) => {
-        const data = res;
-        console.log("SOCKET.IO event ===" , res);
-
-        //socket.emit(grupo) => emite el evento a todos los dispositivos conectados pertenecientes a un grupo(socket.join()) incluyendo al emisor del evento
-        //socket.to(grupo) => lo mismo que emit() pero no incluye al emisor del evento
-        socket.to().emit('event', res);
-    });
-});
+socketIO.connection(server, whitelist);
 
 
 export default server;

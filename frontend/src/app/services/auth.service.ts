@@ -119,10 +119,14 @@ export class AuthService {
         return res;
       }).catch(error => {
         this.isLoggedIn = false;
+        localStorage.clear();
+        sessionStorage.clear();
         return false;
       });
     }else{
       this.isLoggedIn = false;
+      localStorage.clear();
+      sessionStorage.clear();
       return false;
     }
   }
