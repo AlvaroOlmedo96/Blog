@@ -54,11 +54,12 @@ export class HomeComponent implements OnInit {
   private socketSrv: SocketWebService, private messageService: MessageService, private formBuilder: FormBuilder, private bImgSrv: BlobImageService) {
     this.isBrowser = isPlatformBrowser(platformId);
 
-    socketSrv.cb_userConnection.subscribe( res => {
+    socketSrv.cb_newPost.subscribe( res => {
+      console.log("SOCKET cb_newPost", res);
+      this.getPosts();
+    });
+    socketSrv.cb_userConnection.subscribe( async res => {
       console.log("SOCKET cb_userConnection", res);
-      res.forEach(user => {
-        this.messageService.add({severity: 'success', summary:`${user.username}`, detail:`Se ha conectado.`});
-      });
     });
 
     this.postSettings = [
@@ -100,7 +101,7 @@ export class HomeComponent implements OnInit {
   async initCharge(){
     await this.getProfile();
     await this.getPosts();
-    await this.getAllUsers();
+    //await this.getAllUsers();
     this.chargingData = false;
   }
 
@@ -113,7 +114,6 @@ export class HomeComponent implements OnInit {
   async getProfile(){
     await this.authSrv.getProfile().then( res => {
       this.user = res.user;
-      this.socketSrv.createUserSocketId(this.user._id);//Creamos un socketID para el usuario
       let reader = new FileReader(); let reader2 = new FileReader();
       if(res.profileImgURL != null && res.profileImgURL != ''){ 
         reader.readAsDataURL(res.profileImgURL);

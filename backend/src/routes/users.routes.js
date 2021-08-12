@@ -7,7 +7,7 @@ import * as authJwt from '../middlewares/authJwt';
 
 router.get('/users', authJwt.verifyToken, userCtrl.getUsers);
 router.get('/userName', authJwt.verifyToken, userCtrl.getUserByName);
-router.get('/userId/:id', authJwt.verifyToken, userCtrl.getUserById);
+router.get('/userId', authJwt.verifyToken, userCtrl.getUserById);
 router.get('/usersById', authJwt.verifyToken, userCtrl.getUsersById);
 router.post('/updateProfile', authJwt.verifyToken, userCtrl.updateProfile);
 router.post('/updateProfileImages', authJwt.verifyToken, multer.uploadSingleImage, userCtrl.updateProfileImg);
@@ -15,5 +15,6 @@ router.post('/updateProfileImages', authJwt.verifyToken, multer.uploadSingleImag
 router.get('/getProfileImages', authJwt.verifyToken, userCtrl.getProfileImages);
 
 router.post('/friendRequest', authJwt.verifyToken, userCtrl.friendRequest);
+router.post('/getNotifications', authJwt.verifyToken, userCtrl.getNotificationsById);
 
 export default router;

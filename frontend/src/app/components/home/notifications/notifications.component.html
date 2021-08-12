@@ -1,0 +1,40 @@
+<div class="row col-12 justify-content-center p-0 m-0 pt-5">
+    <div *ngIf="chargingData" class="text-center pt-5">
+        <div class="spinner-grow text-primary mt-5 m-3" role="status" *ngFor="let repeat of [].constructor(3)"></div>
+    </div>
+    <div class="container p-0 pt-5" *ngIf="!chargingData">
+        <div class="row col-12 m-0 p-0 justify-content-center appear">
+            <div class="col-12 p-0 pl-md-5 pr-md-5">
+                <div class="card">
+                    <h2 class="text-center pt-4">Notificaciones</h2>
+                    <hr>
+                    <div *ngFor="let not of notifications" class="row justify-content-center col-12 m-0 p-0 pl-1 pr-2 mt-3">
+                        <div class="col-10 p-0 m-0 row justify-content-center" style="cursor: pointer;">
+                            <div class="col-3 col-md-2 text-center p-0">
+                                <img src="../../../assets/defaultProfile.png" alt="Avatar" class="avatar img-fluid">
+                            </div>
+                            <div class="col-9 col-md-10 p-0 m-0 row">
+                                <span class="col-12 p-0">{{not.emiterUsername}}</span>
+                                <span class="col-12 p-0 text-info">{{not.description}}</span>
+                                <small class="small-text">{{not.createdAt | date:'shortDate'}}</small>
+                            </div>
+                        </div>
+                        <div class="col-2 p-0 m-0 text-right row align-content-middle">
+                            <div class="col-12 p-0" style="top:0px">
+                                <button class="col-12 p-1 btn btn-outline-primary">
+                                    <i class="pi pi-user-plus"></i>
+                                    <span class="d-none d-md-inline">&nbsp;Aceptar</span>
+                                </button>
+                                <button class="col-12 p-1 mt-1 btn btn-outline-danger">
+                                    <i class="pi pi-ban"></i>
+                                    <span class="d-none d-md-inline">&nbsp;Rechazar</span>
+                                </button>
+                            </div>
+                        </div>
+                        <hr class="col-8 m-2 p-0">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

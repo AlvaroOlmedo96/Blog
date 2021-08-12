@@ -54,8 +54,17 @@ export class UsersService {
     });
   }
 
-  getUserById(){
-
+  async getUserById(token, userId){
+    const headerType = 'x-access-token';
+    const headers = {[headerType]: token};
+    const params = {
+        userId: userId
+    }
+    return await this.http.get(`${this.url}/api/users/userId`, { params: params, headers: headers}).toPromise().then( (res:any) => {
+        return res;
+    }).catch( error => {
+        return error;
+    });
   }
 
   //UPDATE PROFILE
@@ -78,6 +87,31 @@ export class UsersService {
     const headerType = 'x-access-token';
     const headers = {[headerType]: body.token};
     return await this.http.post(`${this.url}/api/users/updateProfile`, body, { headers: headers}).toPromise().then( res => {
+        return res;
+    }).catch( error => {
+        return error;
+    });
+  }
+
+  //FRIENDS REQUESTS
+  async friendRequest(token, body){
+    const headerType = 'x-access-token';
+    const headers = {[headerType]: token};
+    return await this.http.post(`${this.url}/api/users/friendRequest`, body, { headers: headers}).toPromise().then( res => {
+        return res;
+    }).catch( error => {
+        return error;
+    });
+  }
+
+  async getNotifications(token, idList:Array<string>){
+    const headerType = 'x-access-token';
+    const headers = {[headerType]: token};
+    const body = {
+      idList: idList
+    }
+    //He usado metodo post porque get tiene limite de tamaño para los parametros enviados
+    return await this.http.post(`${this.url}/api/users/getNotifications`, body, { headers: headers}).toPromise().then( res => {
         return res;
     }).catch( error => {
         return error;

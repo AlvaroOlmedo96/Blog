@@ -47,7 +47,7 @@ export const getUsersById = async (req, res) => {
 //Obtiene un usuario por ID
 export const getUserById = async (req, res) => {
     try {
-        const users = await User.findById(req.params.postId);
+        const users = await User.findById(req.query.userId);
         res.json(users);
     } catch (error) {
         res.status(500).json({msg: 'Server error'});
@@ -64,7 +64,6 @@ export const getUserByName = async (req, res) => {
             const users = await User.find({ username: {$regex: normalizedString, $options: 'i'} }).collation({locale: "en", strength: 1});
             let finalUser = [];
             for(let r of users){
-                console.log("USER BUSCADO", r);
                 finalUser.push({
                     username: r.username, 
                     id: r.id,
@@ -120,12 +119,47 @@ export const getProfileImages = async (req, res) => {
 
 //PEDIR Solicitud de amistad
 export const friendRequest = async (req, res) => {
-    const {emiterUserId, receiverUserId, notification} = req.query;
+    const {notification} = req.body;
+    console.log(req.body);
     const newNotification = new Notifications(notification);
-    const notificationSaved = await newPost.save();
-    const emiterUser = await User.findByIdAndUpdate(emiterUserId, {$push: {"notifications": {"send": notificationSaved._id.toString()} }});
-    const receiverUser = await User.findByIdAndUpdate(receiverUserId, {$push: {"notifications": {"receive": notificationSaved._id.toString()} }});
+    const notificationSaved = await newNotification.save();
+    const emiterUser = await User.findByIdAndUpdate(notification.emiterUserId, {$push: {"notifications": {"send": notificationSaved._id.toString()} }});
+    const receiverUser = await User.findByIdAndUpdate(notification.receiveUserId, {$push: {"notifications": {"receive": notificationSaved._id.toString()} }});
+    
+    //SOCKET.IO PARA NOTIFICAR AL RECEPTOR DE LA NOTIFICACION
+    let socketId = socketIO.getUserById(notification.receiveUserId);
+    if(socketId != undefined && socketId != null && socketId != ''){//Si el usuario destinatario esta conectado se enviara la notificacion socket
+        socketIO.getIo().to(socketId).emit('newNotification', notificationSaved);
+    }
+
     res.json({msg:"NOTIFICACION CREADA"});
+}
+
+export const getNotificationsById = async (req, res) => {
+    const { idList } = req.body;
+    console.log(idList)
+    let notificationsList = [];
+    try {
+        if(idList != undefined && idList.length > 0){
+            if(Array.isArray(idList)){
+                for(let id of idList){
+                    const notification = await Notifications.findById(id);
+                    if(notification != null){
+                        notificationsList.push(notification);
+                    }
+                }
+            }else{
+                const notification = await Notifications.findById(idList);
+                if(notification != null){
+                    notificationsList.push(notification);
+                }
+            }
+        }
+        notificationsList.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)); //Ordenamos por los mas recientes
+        res.json(notificationsList);
+    } catch (error) {
+        res.status(500).json({msg: 'Server error for getNotificationsById', error: error});
+    }
 }
 
 

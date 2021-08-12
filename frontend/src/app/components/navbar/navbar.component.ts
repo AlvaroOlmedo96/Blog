@@ -1,7 +1,11 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Component, HostListener, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { Router } from '@angular/router';
 import {MenuItem, MessageService} from 'primeng/api';
+import { Notifications } from 'src/app/models/notifications.model';
 import { User } from 'src/app/models/user.model';
 import { AuthService } from 'src/app/services/auth.service';
+import { SocketWebService } from 'src/app/services/socket-web.service';
 import { UsersService } from 'src/app/services/users.service';
 
 @Component({
@@ -19,6 +23,9 @@ export class NavbarComponent implements OnInit {
     }
   }
 
+  isBrowser:boolean = false;
+  modalWidth = {width: '100vw'};
+
   navbarSearchText:string = '';
   options: MenuItem[];
   recommendedListSearched = [];
@@ -29,19 +36,44 @@ export class NavbarComponent implements OnInit {
     username: ''
   };
 
-  constructor(private authSrv: AuthService, private messageService: MessageService, private userSrv:UsersService) { }
+  notifications = [];
+
+  constructor(@Inject(PLATFORM_ID) platformId: Object, private authSrv: AuthService, private messageService: MessageService, private userSrv:UsersService, 
+  private socketSrv: SocketWebService, private router: Router) { 
+    this.isBrowser = isPlatformBrowser(platformId);
+
+    socketSrv.cb_newNotification.subscribe( res => {
+      console.log("SOCKET cb_newNotification", res);
+      this.notifications.push(res);
+      let severity = 'success';//success info warn error
+      if(res.type == 'friendRequest'){
+        severity = 'info';
+      }
+      this.messageService.add({severity: severity, summary:`${res.emiterUsername}`, detail:`${res.description}`});
+    });
+
+  }
 
   ngOnInit(): void {
+    if(this.isBrowser){this.modalWidth = (window.innerWidth <= 1000) ? {width: '100vw'} : {width: '30vw'}};
     this.getProfile();
 
     this.options = [
       {label: 'Ajustes', icon: 'pi pi-cog', routerLink: ['/login']},
       {separator:true},
-      {label: 'Cerrar sesión', icon: 'pi pi-times', command: () => {
+      {label: 'Cerrar sesión', icon: 'pi pi-sign-out', command: () => {
         this.authSrv.signOut();
       }}
     ];
 
+  }
+
+  navigateTo(ruta){
+    let params = { 'user': JSON.stringify(this.user) };
+    if(ruta == 'home'){this.router.navigate(['/home']);}
+    console.log(this.user);
+    if(ruta == 'notifications'){this.router.navigate(['/home/notifications'], {queryParams: params});}
+    if(ruta == 'profile'){this.router.navigate(['/home/profile']);}
   }
 
   collapseNavbar(){
@@ -53,6 +85,8 @@ export class NavbarComponent implements OnInit {
   getProfile(){
     this.authSrv.currentUser().then( (res:User) => {
       this.user = res;
+      this.notifications = res.notifications.filter( not => not.receive);
+      this.socketSrv.createUserSocketId(this.user._id);//Creamos un socketID para el usuario
     });
   }
 
@@ -86,6 +120,30 @@ export class NavbarComponent implements OnInit {
     }else{
       this.recommendedListSearched = [];
     }
+  }
+
+  async sendFriendRequest(user){
+    console.log(user);
+    let newNotification:Notifications = {
+      type: 'friendRequest',
+      emiterUserId: this.user._id,
+      emiterUsername: this.user.username,
+      receiveUserId: user.id,
+      receiveUsername: user.username,
+      description: 'Friend request'
+    }
+    let body = {
+      notification: newNotification,
+    }
+    console.log(body);
+
+    this.userSrv.friendRequest(this.authSrv.getToken(), body).then( res => {
+      console.log(res);
+    });
+  }
+
+  async checkNotifications(){
+
   }
 
 }

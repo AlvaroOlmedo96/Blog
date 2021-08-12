@@ -12,8 +12,11 @@ import { FormsModule } from '@angular/forms';
 import {SplitButtonModule} from 'primeng/splitbutton';
 import { ToastModule } from 'primeng/toast';
 import {MenuModule} from 'primeng/menu';
+import {BadgeModule} from 'primeng/badge';
 import {OverlayPanelModule} from 'primeng/overlaypanel';
 import { SocketWebService } from './services/socket-web.service';
+
+
 
 @NgModule({
   declarations: [
@@ -30,7 +33,8 @@ import { SocketWebService } from './services/socket-web.service';
     SplitButtonModule,
     ToastModule,
     OverlayPanelModule,
-    MenuModule
+    MenuModule,
+    BadgeModule
   ],
   exports: [
   ],

@@ -15,29 +15,40 @@
         </div>
         <input type="text" class="form-control inputSearch" [(ngModel)]="navbarSearchText" placeholder="Buscar en Ablog..." 
         (keyup.enter)="[search(recommendedPanel), (navbarSearchText.length > 0 && recommendedListSearched.length >= 0) ? recommendedPanel.show($event): recommendedPanel.hide($event)]">
-        <p-overlayPanel #recommendedPanel [style]="{width: '450px'}" [showCloseIcon]="false" [appendTo]="'body'">
+        <p-overlayPanel #recommendedPanel [style]="modalWidth" [showCloseIcon]="false" [appendTo]="'body'">
           <ng-template pTemplate>
-              <div *ngFor="let recommend of recommendedListSearched" class="m-0 p-0 align-middle" style="display: block;">
-                <div class="mt-3">
-                  <img *ngIf="recommend.imgProfile == ''" src="../../../assets/defaultProfile.png" alt="Avatar" class="avatarNav img-fluid">
-                  <img *ngIf="recommend.imgProfile != ''" [src]="recommend.imgProfile" alt="Avatar" class="avatarNav img-fluid">
-                  <span class="p-0 m-0 ml-2">{{recommend.username}}</span>
-                </div>
+              <div *ngFor="let recUser of recommendedListSearched" class="row col-12 m-0 p-0 mt-3">
+                <ng-container *ngIf="recUser.id != user._id">
+                  <div class="col-8 p-0 m-0" style="cursor: pointer;" (click)="openUserProfile()">
+                    <img *ngIf="recUser.imgProfile == ''" src="../../../assets/defaultProfile.png" alt="Avatar" class="avatarNav img-fluid">
+                    <img *ngIf="recUser.imgProfile != ''" [src]="recUser.imgProfile" alt="Avatar" class="avatarNav img-fluid">
+                    <span class="p-0 m-0 ml-2">{{recUser.username}}</span>
+                  </div>
+                  <div class="col-4 p-0 m-0 text-right">
+                    <button class="col-12 p-1 btn btn-outline-primary" (click)="sendFriendRequest(recUser)">
+                      <i class="pi pi-user-plus"></i>
+                      <span class="d-none d-md-inline">&nbsp;Follow</span>
+                    </button>
+                  </div>
+                </ng-container>
               </div>
           </ng-template>
         </p-overlayPanel>
       </div>
       <ul class="navbar-nav mr-auto pt-3 p-lg-0 navItem">
-        <li class="nav-item active row text-center p-1 m-1" (click)="collapseNavbar()" [routerLink]="['/home']" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}">
-          <i class="pi pi-home col-12 p-0 m-0"></i>
-          <a class="nav-link col-12 p-0 m-0">Home <span class="sr-only">(current)</span></a>
+        <li class="nav-item row text-center p-1 m-1" (click)="collapseNavbar()" (click)="navigateTo('home')" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}">
+          <i class="pi pi-home col-12 p-0 m-0" style="font-size: 2rem"></i>
+          <a class="nav-link col-12 p-0 m-0">Home</a>
         </li>
-        <li class="nav-item row text-center p-1 m-1" (click)="collapseNavbar()" [routerLink]="['/notifications']" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}">
-          <i class="pi pi-bell col-12 p-0 m-0"></i>
+        <li class="nav-item row text-center p-1 m-1" (click)="collapseNavbar()" (click)="navigateTo('notifications')" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}">
+          <div class="col-12 p-0 m-0">
+            <i *ngIf="notifications.length > 0" class="pi pi-bell" pBadge style="font-size: 2rem" severity="danger" value="{{notifications.length}}"></i>
+            <i *ngIf="!notifications.length" class="pi pi-bell" style="font-size: 2rem"></i>
+          </div>
           <a class="nav-link col-12 p-0 m-0">Notificaciones</a>
         </li>
-        <li class="nav-item row text-center p-1 m-1" (click)="collapseNavbar()" [routerLink]="['/home/profile']" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}">
-          <i class="pi pi-user col-12 p-0 m-0"></i>
+        <li class="nav-item row text-center p-1 m-1" (click)="collapseNavbar()" (click)="navigateTo('profile')" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}">
+          <i class="pi pi-user col-12 p-0 m-0" style="font-size: 2rem"></i>
           <a class="nav-link col-12 p-0 m-0">Perfil</a>
         </li>
       </ul>
@@ -46,6 +57,9 @@
         <p-menu #menu [popup]="true" [model]="options" appendTo="body"></p-menu> 
       </div>
     </div>
+    
 </nav>
 
-<p-toast></p-toast>
+<div class="row col-12 m-0 p-0 justify-content-center">
+  <p-toast [style]="modalWidth" position="bottom-right" class="custom-toast"></p-toast>
+</div>

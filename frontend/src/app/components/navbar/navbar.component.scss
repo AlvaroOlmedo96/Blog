@@ -25,7 +25,9 @@
     transition: 0.25s ease-in-out;
     cursor: pointer;
     border-radius: 5px;
+    color: rgb(0, 162, 255);
 }
+
 .active{
     background-color: rgba(139, 193, 255, 0.719);
     transition: 0.25s ease-in-out;

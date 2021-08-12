@@ -8,8 +8,8 @@ import { environment } from 'src/environments/environment';
 export class SocketWebService extends Socket{
 
   cb_userConnection: EventEmitter<any> = new EventEmitter();
-  cb_deletePost: EventEmitter<any> = new EventEmitter();
-  cb_profileUpdated: EventEmitter<any> = new EventEmitter();
+  cb_newPost: EventEmitter<any> = new EventEmitter();
+  cb_newNotification: EventEmitter<any> = new EventEmitter();
 
   constructor() {
     super({
@@ -24,10 +24,9 @@ export class SocketWebService extends Socket{
 
   //Se encarga de escuchar cuando el back emite algún evento al front
   listen = () => {
-    this.ioSocket.on('userConnection', res => this.cb_userConnection.emit(res)); 
-    this.ioSocket.on('profileUpdated', res => this.cb_profileUpdated.emit(res)); 
-    this.ioSocket.on('deletePost', res => this.cb_deletePost.emit(res)); 
-    this.ioSocket.on('getUsers', res => console.log("GETUSER", res)); 
+    this.ioSocket.on('newPost', res => this.cb_newPost.emit(res)); 
+    this.ioSocket.on('getUsers', res => this.cb_userConnection.emit(res)); 
+    this.ioSocket.on('newNotification', res => this.cb_newNotification.emit(res)); 
   }
 
   createUserSocketId = (userId) => {
@@ -36,7 +35,6 @@ export class SocketWebService extends Socket{
 
   //Se encarga de emitir eventos desde el Front al Back
   userConnection = ( payload = {} ) => {
-    this.ioSocket.emit('userConnection', payload);
   }
 
   updateProfile = (userId) => {

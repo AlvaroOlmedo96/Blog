@@ -20,16 +20,19 @@ import {KnobModule} from 'primeng/knob';
 import {NgxImageCompressService} from 'ngx-image-compress';
 import { ImageCropperModule } from 'ngx-image-cropper';
 import { BlobImageService } from 'src/app/services/blobImages.service';
+import { NotificationsComponent } from './notifications/notifications.component';
 
 const routes: Routes =[
   { path: '', component: HomeComponent },
-  { path: 'profile', component: ProfileComponent }
+  { path: 'profile', component: ProfileComponent },
+  { path: 'notifications', component: NotificationsComponent }
 ];
 
 @NgModule({
   declarations: [
     HomeComponent,
-    ProfileComponent
+    ProfileComponent,
+    NotificationsComponent
   ],
   imports: [
     RouterModule.forChild(routes),

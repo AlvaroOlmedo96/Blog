@@ -3,6 +3,7 @@ import User from '../models/User.model';
 import path from 'path';
 import fs from 'fs';
 import * as multer from '../middlewares/multer';
+import * as socketIO from '../middlewares/socketWeb';
 
 
 
@@ -13,6 +14,13 @@ export const createPost = async (req, res) => {
         const postSaved = await newPost.save();
         //Guardamos el post en el usuario que lo ha creado
         const user = await User.findByIdAndUpdate(postSaved.propietaryId, {$push: {"posts": postSaved._id.toString()}});
+
+        //Notificamos con socket.io
+        socketIO.getSocket().on('newPost', res => {
+            
+        });
+        socketIO.getIo().emit('newPost', 'Nuevos post publicados');
+
         res.status(201).json({post:postSaved, user:user});
     } catch (error) {
         res.status(500).json({msg: 'Server error for create Post'});
