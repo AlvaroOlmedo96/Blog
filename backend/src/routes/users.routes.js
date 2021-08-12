@@ -15,6 +15,8 @@ router.post('/updateProfileImages', authJwt.verifyToken, multer.uploadSingleImag
 router.get('/getProfileImages', authJwt.verifyToken, userCtrl.getProfileImages);
 
 router.post('/friendRequest', authJwt.verifyToken, userCtrl.friendRequest);
+router.post('/acceptFriendRequest', authJwt.verifyToken, userCtrl.acceptFriendRequest);
+router.post('/declineFriendRequest', authJwt.verifyToken, userCtrl.declineFriendRequest);
 router.post('/getNotifications', authJwt.verifyToken, userCtrl.getNotificationsById);
 
 export default router;

@@ -52,7 +52,7 @@
                         </div>
                         <div class="col-8 col-sm-9 m-0 p-0 align-items-center">
                             <h5 class="text-truncate">{{post.propietaryUsername}}</h5>
-                            <h6 class="card-subtitle mb-2 text-muted small-text">{{post.createdAt | date:mediumDate}}</h6>
+                            <h6 class="card-subtitle mb-2 text-muted small-text">{{post.createdAt | date:shortDate}}</h6>
                         </div>
                         <div class="col-1 m-0 p-0 text-center">
                             <button class="btn" (click)="settingsPost.toggle($event)"><i class="pi pi-ellipsis-h"></i></button>

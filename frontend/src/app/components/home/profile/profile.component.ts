@@ -46,6 +46,8 @@ export class ProfileComponent implements OnInit {
   userPosts = [];
   postSettings: MenuItem[];
 
+  contacts = [];
+
   constructor(@Inject(PLATFORM_ID) platformId: Object, private authSrv: AuthService, private postSrv:PostsService, private formBuilder: FormBuilder, 
   private userSrv:UsersService, private bImgSrv: BlobImageService, private socketSrv: SocketWebService) { 
     this.isBrowser = isPlatformBrowser(platformId);
@@ -67,9 +69,11 @@ export class ProfileComponent implements OnInit {
   ngOnInit(): void {
     this.items = [
       {label: 'Publicaciones', icon: '', command: (event) => {
-        //this.
+        this.toggleContent('posts');
       }},
-      {label: 'Contactos', icon: ''},
+      {label: 'Contactos', icon: '',command: (event) => {
+        this.toggleContent('contacts');
+      }},
     ];
     this.activeItem = this.items[0];
 
@@ -80,7 +84,15 @@ export class ProfileComponent implements OnInit {
     if(this.isBrowser){this.modalWidth = (window.innerWidth <= 1150) ? {width: '90vw'} : {width: '30vw'}};
     await this.getProfile();
     await this.getMyPosts();
+    await this.getContacts();
     this.chargingData = false;
+  }
+
+  showContacts: boolean = false;
+  showPosts: boolean = true;
+  toggleContent(page){
+    if(page == 'posts'){this.showContacts = false; this.showPosts = true;}
+    if(page == 'contacts'){this.showContacts = true; this.showPosts = false;}
   }
 
 
@@ -132,6 +144,16 @@ export class ProfileComponent implements OnInit {
     }).catch( error => {
       this.userPosts = [];
     });
+  }
+
+  async getContacts(){
+    if(this.user.contacts.length > 0){
+      console.log(this.user.contacts);
+      this.userSrv.getUsersById(this.authSrv.getToken(), this.user.contacts).then( res =>{
+        console.log(res);
+        this.contacts = res;
+      });
+    }
   }
 
   showEditProfile(){

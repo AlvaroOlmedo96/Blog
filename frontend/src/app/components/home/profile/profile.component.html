@@ -29,13 +29,13 @@
         <!--CONTENT-->
         <div class="col-12 mt-3">
             <!--PUBLICACIONES-->
-            <div class="row justify-content-center">
+            <div class="row justify-content-center" *ngIf="showPosts">
                 <ng-container *ngIf="userPosts.length > 0">
                     <div class="card shadow p-0 m-1 col-12 col-sm-5 col-md-4 col-lg-3 appear" *ngFor="let post of userPosts">
                         
                         <div class="col-12 p-0 m-0">
                             <div class="col-12 row m-0 p-0">
-                                <span class="col-10 small-text">{{post.createdAt | date:'mediumDate'}}</span>
+                                <span class="col-10 small-text">{{post.createdAt | date:'shortDate'}}</span>
                                 <div class="text-right col-2">
                                     <button class="btn p-0" (click)="[settingsPost.toggle($event), getLastPost(post)]"><i class="pi pi-ellipsis-h"></i></button>
                                     <p-menu #settingsPost [popup]="true" [model]="postSettings" [appendTo]="'body'"></p-menu> 
@@ -60,8 +60,18 @@
                 </ng-container>
             </div>
             <!--CONTACTOS-->
-            <div class="row">
-
+            <div class="row justify-content-center" *ngIf="showContacts">
+                <ng-container *ngIf="!contacts.length">
+                    <h3>Aún no tienes contactos</h3>
+                </ng-container>
+                <ng-container *ngIf="contacts.length > 0">
+                    <div *ngFor="let contact of contacts" class="col-12 card m-1">
+                        <div class="col-8 p-0 m-0" style="cursor: pointer;">
+                            <img src="../../../assets/defaultProfile.png" alt="Avatar" class="avatar img-fluid">
+                            <span class="p-0 m-0 ml-2">{{contact.username}}</span>
+                        </div>
+                    </div>
+                </ng-container>
             </div>
         </div>
     </div>

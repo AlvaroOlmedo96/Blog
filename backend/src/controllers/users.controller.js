@@ -135,6 +135,48 @@ export const friendRequest = async (req, res) => {
     res.json({msg:"NOTIFICACION CREADA"});
 }
 
+export const acceptFriendRequest = async (req, res) => {
+    try {
+        const {emiterUserId, receiverUserId, notificationId} = req.body;
+        //Comprobar primero si ya son contactos
+        const alreadyEmiterContact = await User.find({_id:emiterUserId, "contacts": receiverUserId});
+        const alreadyReceiverContact = await User.find({_id:receiverUserId, "contacts": emiterUserId});
+        console.log("=====alreadyContact======",alreadyEmiterContact.length, '/', alreadyReceiverContact.length);
+        if(alreadyEmiterContact.length <= 0 && alreadyReceiverContact.length <= 0){
+            //Añadir contacto en ambos usuarios
+            await User.findByIdAndUpdate( emiterUserId, {$push: {"contacts": receiverUserId.toString() }} );
+            await User.findByIdAndUpdate( receiverUserId, {$push: {"contacts": emiterUserId.toString() } } );
+            //Eliminar notificacion
+            await Notifications.findByIdAndDelete( notificationId );
+            //Eliminar notificacion de los usuarios
+            await User.findByIdAndUpdate( emiterUserId, {$pull: {"notifications": {"send": notificationId}} } );
+            await User.findByIdAndUpdate( receiverUserId, {$pull: {"notifications": {"receive": notificationId}} } );
+
+            res.json({msg:'acceptFriendRequest'});
+        }else{
+            res.json({msg:'Ya sois contactos'});
+        }
+    }catch (error) {
+        res.status(500).json({msg:'Server Error acceptFriendRequest', error: error});
+    }
+    
+}
+
+export const declineFriendRequest = async (req, res) => {
+    try {
+        const {emiterUserId, receiverUserId, notificationId} = req.body;
+        //Eliminar notificacion
+        await Notifications.findByIdAndDelete( notificationId );
+        //Eliminar notificacion de los usuarios
+        await User.findByIdAndUpdate( emiterUserId, {$pull: {"notifications": {"send": notificationId}} } );
+        await User.findByIdAndUpdate( receiverUserId, {$pull: {"notifications": {"receive": notificationId}} } );
+
+        res.json({msg:'declineFriendRequest'});
+    } catch (error) {
+        res.status(500).json({msg:'Server Error declineFriendRequest', error: error});
+    }
+}
+
 export const getNotificationsById = async (req, res) => {
     const { idList } = req.body;
     console.log(idList)

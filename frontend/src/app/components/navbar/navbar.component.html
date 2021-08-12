@@ -14,7 +14,7 @@
           <span class="input-group-text inputSearch" id="basic-addon1"><i class="pi pi-search"></i></span>
         </div>
         <input type="text" class="form-control inputSearch" [(ngModel)]="navbarSearchText" placeholder="Buscar en Ablog..." 
-        (keyup.enter)="[search(recommendedPanel), (navbarSearchText.length > 0 && recommendedListSearched.length >= 0) ? recommendedPanel.show($event): recommendedPanel.hide($event)]">
+        (keyup.enter)="[search(), (navbarSearchText.length > 0 && recommendedListSearched.length >= 0) ? recommendedPanel.show($event): recommendedPanel.hide($event)]">
         <p-overlayPanel #recommendedPanel [style]="modalWidth" [showCloseIcon]="false" [appendTo]="'body'">
           <ng-template pTemplate>
               <div *ngFor="let recUser of recommendedListSearched" class="row col-12 m-0 p-0 mt-3">
@@ -24,7 +24,7 @@
                     <img *ngIf="recUser.imgProfile != ''" [src]="recUser.imgProfile" alt="Avatar" class="avatarNav img-fluid">
                     <span class="p-0 m-0 ml-2">{{recUser.username}}</span>
                   </div>
-                  <div class="col-4 p-0 m-0 text-right">
+                  <div class="col-4 p-0 m-0 text-right" *ngIf="!recUser.isContact">
                     <button class="col-12 p-1 btn btn-outline-primary" (click)="sendFriendRequest(recUser)">
                       <i class="pi pi-user-plus"></i>
                       <span class="d-none d-md-inline">&nbsp;Follow</span>

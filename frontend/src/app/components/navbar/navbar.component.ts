@@ -43,7 +43,7 @@ export class NavbarComponent implements OnInit {
     this.isBrowser = isPlatformBrowser(platformId);
 
     socketSrv.cb_newNotification.subscribe( res => {
-      console.log("SOCKET cb_newNotification", res);
+      console.log("SOCKET cb_newNotification Navbar", res);
       this.notifications.push(res);
       let severity = 'success';//success info warn error
       if(res.type == 'friendRequest'){
@@ -90,7 +90,7 @@ export class NavbarComponent implements OnInit {
     });
   }
 
-  async search(event){
+  async search(){
     if(this.navbarSearchText.trim().length > 0){
       const token = this.authSrv.getToken();
       await this.userSrv.getUserByName(token, this.navbarSearchText.toLowerCase()).then( async res => {
@@ -101,6 +101,11 @@ export class NavbarComponent implements OnInit {
           this.recommendedListSearched = res;
         }
         console.log("USERSBYNAME", this.recommendedListSearched);
+        
+        //Si ya es mi contacto eliminar de la lista
+        this.recommendedListSearched.filter( recUser => this.user.contacts.find(u => { if(u === recUser.id){recUser.isContact = true;} } ));
+        console.log("USERSBYNAME NO CONTACTS", this.recommendedListSearched);
+
         await this.recommendedListSearched.forEach( async user => {
           if(user.imgProfile != ''){
             await this.authSrv.getProfileImg(user.imgProfile).then( img => {
@@ -115,7 +120,7 @@ export class NavbarComponent implements OnInit {
               }
             });
           }
-        })
+        });
       });
     }else{
       this.recommendedListSearched = [];

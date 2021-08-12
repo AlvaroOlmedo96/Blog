@@ -104,6 +104,26 @@ export class UsersService {
     });
   }
 
+  async acceptFriendRequest(token, body){
+    const headerType = 'x-access-token';
+    const headers = {[headerType]: token};
+    return await this.http.post(`${this.url}/api/users/acceptFriendRequest`, body, { headers: headers}).toPromise().then( res => {
+        return res;
+    }).catch( error => {
+        return error;
+    });
+  }
+
+  async declineFriendRequest(token, body){
+    const headerType = 'x-access-token';
+    const headers = {[headerType]: token};
+    return await this.http.post(`${this.url}/api/users/declineFriendRequest`, body, { headers: headers}).toPromise().then( res => {
+        return res;
+    }).catch( error => {
+        return error;
+    });
+  }
+
   async getNotifications(token, idList:Array<string>){
     const headerType = 'x-access-token';
     const headers = {[headerType]: token};
