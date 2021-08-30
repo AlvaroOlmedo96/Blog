@@ -47,6 +47,13 @@
           </div>
           <a class="nav-link col-12 p-0 m-0">Notificaciones</a>
         </li>
+        <li class="nav-item row text-center p-1 m-1" (click)="collapseNavbar()" (click)="navigateTo('chats')" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}">
+          <div class="col-12 p-0 m-0">
+            <i *ngIf="notifications.length > 0" class="pi pi-comments" pBadge style="font-size: 2rem" severity="danger" value="{{notifications.length}}"></i>
+            <i *ngIf="!notifications.length" class="pi pi-comments" style="font-size: 2rem"></i>
+          </div>
+          <a class="nav-link col-12 p-0 m-0">Mensajes</a>
+        </li>
         <li class="nav-item row text-center p-1 m-1" (click)="collapseNavbar()" (click)="navigateTo('profile')" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}">
           <i class="pi pi-user col-12 p-0 m-0" style="font-size: 2rem"></i>
           <a class="nav-link col-12 p-0 m-0">Perfil</a>

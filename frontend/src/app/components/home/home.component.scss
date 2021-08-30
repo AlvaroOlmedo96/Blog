@@ -34,3 +34,28 @@
     cursor: pointer;
     text-decoration: underline;
 }
+
+.circleOffline {
+    height: 10px;
+    width: 10px;
+    background-color: rgb(156, 156, 156);
+    border-radius: 50%;
+    display: inline-block;
+}
+.circleOnline {
+    height: 10px;
+    width: 10px;
+    background-color: rgb(43, 255, 0);
+    border-radius: 50%;
+    display: inline-block;
+}
+.friend{
+    cursor: pointer;
+    padding: 5px;
+}
+.friend:hover{
+    background-color: rgb(0, 238, 255);
+    color: white;
+    border-radius: 30px;
+    transition: 0.25s ease-in-out;
+}

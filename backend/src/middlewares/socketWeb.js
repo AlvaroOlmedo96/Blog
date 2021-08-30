@@ -54,10 +54,8 @@ export const getUserById = (userId) => {
 }
 
 const removeUser = (socketId) => {
-    /*users = users.filter((user) => user.socketId !== socketId);
-    let desconnectedUser = users.filter((user) => user.socketId === socketId)
-    console.log("SE HA DESCONECTADO EL USUARIO", desconnectedUser);
-    console.log("USUARIOS CONECTADOS", users);*/
+    users = users.filter((user) => user.socketId !== socketId);
+    console.log("USUARIOS CONECTADOS", users);
 }
 
 //module.exports = {connection, getSocket};

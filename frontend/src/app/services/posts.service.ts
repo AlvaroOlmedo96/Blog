@@ -17,10 +17,14 @@ export class PostsService {
     this.isBrowser = isPlatformBrowser(platformId);
   }
 
-  async getPosts(token:string){
+  async getPosts(token:string, idList:Array<string>, currentId){
     const headerType = 'x-access-token';
     const headers = {[headerType]: token};
-    return await this.http.get(`${this.url}/api/posts`, { headers: headers }).toPromise().then( res => {
+    idList.push(currentId);
+    const params = {
+      idList: idList
+    }
+    return await this.http.get(`${this.url}/api/posts`, { params: params, headers: headers }).toPromise().then( res => {
         return res;
     }).catch( error => {
         return error;
@@ -68,7 +72,7 @@ export class PostsService {
   async getPostImage(token, imageURL){
     const headerType = 'x-access-token';
     const headers = {[headerType]: token};
-
+    console.log(imageURL);
     const params = {
       path: imageURL.replace('src/','').replace('public/','')
     }

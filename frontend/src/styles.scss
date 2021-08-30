@@ -65,6 +65,15 @@ body{
     border-radius: 50%;
     object-fit: cover;
 }
+.avatar-sm {
+    vertical-align: middle;
+    position: relative;
+    width: 25px;
+    height: 25px;
+    overflow: hidden;
+    border-radius: 50%;
+    object-fit: cover;
+}
 
 .avatar-md {
     vertical-align: middle;
@@ -80,6 +89,15 @@ body{
 .floatingContactsBar{
     position: fixed;
     bottom: 0;
+    width: 100%;
+    z-index: 50;
+    border-radius: 15px;
+}
+
+.floatingChatBox{
+    position: fixed;
+    bottom: 0;
+    left: 80%;
     width: 100%;
     z-index: 50;
     border-radius: 15px;

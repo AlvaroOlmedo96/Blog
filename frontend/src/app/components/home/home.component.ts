@@ -1,7 +1,6 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { NgxImageCompressService } from 'ngx-image-compress';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Post } from 'src/app/models/posts.model';
 import { User } from 'src/app/models/user.model';
@@ -35,13 +34,14 @@ export class HomeComponent implements OnInit {
   compressingFile: boolean = false;
   fileOverLimit: boolean = false;
 
-  listPost:Array<Post> = [];
+  listPost = [];
   postSettings: MenuItem[];
   displayCreatePostModal:boolean = false;
   modalWidth = {width: '80vw'};
   postForm: FormGroup;
   textAreaPost: string;
   isPosting:boolean = false;
+  newPublications:boolean = false;
 
   usersOfPost:any = [];
 
@@ -56,10 +56,15 @@ export class HomeComponent implements OnInit {
 
     socketSrv.cb_newPost.subscribe( res => {
       console.log("SOCKET cb_newPost", res);
-      this.getPosts();
+      //@ts-ignore
+      if(res.propietaryId == this.user._id || this.user.contacts.includes(res.propietaryId)){
+        this.newPublications = true;
+      }
     });
     socketSrv.cb_userConnection.subscribe( async res => {
       console.log("SOCKET cb_userConnection", res);
+      this.friendsList.filter( u => res.find(connect => { if(connect.userId === u._id){u.online = true;} } ));
+      console.log("ONLINE", this.friendsList);
     });
 
     this.postSettings = [
@@ -70,9 +75,9 @@ export class HomeComponent implements OnInit {
 
     this.chatMenuSettings = [
       {
-        label: 'Chats',
+        label: 'Contactos',
         icon:'pi pi-comentarios',
-        items: [
+        items: this.friendsList/*[
             {
                 label: 'Icon online',
                 icon:'pi pi-circle-off'
@@ -81,7 +86,7 @@ export class HomeComponent implements OnInit {
               label: 'Icon offline',
               icon:'pi pi-circle-on'
           }
-        ]
+        ]*/
       }
     ];
 
@@ -101,13 +106,18 @@ export class HomeComponent implements OnInit {
   async initCharge(){
     await this.getProfile();
     await this.getPosts();
-    //await this.getAllUsers();
+    await this.getFriends();
     this.chargingData = false;
   }
 
-  async getAllUsers(){
-    await this.userSrv.getUsers(this.authSrv.getToken()).then( res => {
+  async getFriends(){
+    await this.userSrv.getUsersById(this.authSrv.getToken(), this.user.contacts).then( res => {
       this.friendsList = res;
+      console.log(this.friendsList);
+      this.friendsList.forEach( friend => {
+        friend.label = friend.username
+      })
+      this.chatMenuSettings[0].items = this.friendsList;
     });
   }
 
@@ -133,25 +143,36 @@ export class HomeComponent implements OnInit {
 
   async getPosts(){
     let usersId = [];
-    await this.postSrv.getPosts(this.authSrv.getToken()).then( async (res:[Post]) => {
-      this.listPost = res;
-      if(this.listPost.length > 0){
-        for(let post of this.listPost){
+    this.usersOfPost = [];
+    this.newPublications = false;
+    console.log(this.user.contacts);
+    await this.postSrv.getPosts(this.authSrv.getToken(), [...this.user.contacts], this.user._id).then( async (res) => {
+      console.log(res);
+      if(res.length > 0){
+        this.listPost = [];
+        for(let post of res){
           //Obtiene Imagen de Post
-          await this.postSrv.getPostImage(this.authSrv.getToken(), post.imgURL).then( imgUrl => {
-            if(imgUrl != '' && !imgUrl.error){
-              let reader = new FileReader();
-              reader.readAsDataURL(imgUrl);
-              reader.onload = (_event) => {
-                post.imgURL = reader.result.toString();
+          for(let p of post){
+            await this.postSrv.getPostImage(this.authSrv.getToken(), p.imgURL).then( imgUrl => {
+              if(imgUrl != '' && !imgUrl.error){
+                let reader = new FileReader();
+                reader.readAsDataURL(imgUrl);
+                reader.onload = (_event) => {
+                  p.imgURL = reader.result.toString();
+                }
+              }else{
+                p.imgURL = '';
               }
-            }else{
-              post.imgURL = '';
-            }
-          });
-          usersId.push(post.propietaryId);
+            });
+            this.listPost.push(p);
+          }
         }
       }
+    });
+
+    this.listPost.sort((a,b) => <any>new Date(b.createdAt) - <any>new Date(a.createdAt)); //Ordenamos por los mas recientes
+    this.listPost.forEach(post => {
+      usersId.push(post.propietaryId);
     });
 
     //Obtiene userInfo de cada Post

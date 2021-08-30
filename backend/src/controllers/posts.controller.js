@@ -19,7 +19,7 @@ export const createPost = async (req, res) => {
         socketIO.getSocket().on('newPost', res => {
             
         });
-        socketIO.getIo().emit('newPost', 'Nuevos post publicados');
+        socketIO.getIo().emit('newPost', postSaved);
 
         res.status(201).json({post:postSaved, user:user});
     } catch (error) {
@@ -52,9 +52,28 @@ export const getImagesOfPosts = async (req, res) => {
 
 export const getPosts = async (req, res) => {
    try {
-        const posts = await Post.find();
-        posts.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)); //Ordenamos por los mas recientes
-        res.json(posts);
+        const {idList} = req.query;
+        let postsList = [];
+        if(idList != undefined && idList.length > 0){
+            if(Array.isArray(idList)){
+                for(let id of idList){
+                    const post = await Post.find({propietaryId: id});
+                    if(post != null && post.length > 0){
+                        postsList.push(post);
+                    }
+                }
+            }else{
+                const post = await Post.find({propietaryId: idList});
+                if(post != null && post.length > 0){
+                    postsList.push(post);
+                }
+            }
+        }
+
+        //const posts = await Post.find();
+        postsList.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)); //Ordenamos por los mas recientes
+        console.log("POSTLIST", postsList);
+        res.json(postsList);
    } catch (error) {
         res.status(500).json({msg: 'Server error for getPost'});
    }

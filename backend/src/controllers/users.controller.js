@@ -154,6 +154,11 @@ export const acceptFriendRequest = async (req, res) => {
 
             res.json({msg:'acceptFriendRequest'});
         }else{
+            //Eliminar notificacion
+            await Notifications.findByIdAndDelete( notificationId );
+            //Eliminar notificacion de los usuarios
+            await User.findByIdAndUpdate( emiterUserId, {$pull: {"notifications": {"send": notificationId}} } );
+            await User.findByIdAndUpdate( receiverUserId, {$pull: {"notifications": {"receive": notificationId}} } );
             res.json({msg:'Ya sois contactos'});
         }
     }catch (error) {

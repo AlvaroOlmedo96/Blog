@@ -48,8 +48,30 @@ export class NotificationsComponent implements OnInit {
   async getNotifications(){
     let idList = [];
     this.user.notifications.filter( n => { if(n.receive != undefined && n.receive != null && n.receive != ''){idList.push(n.receive);} });
-    await this.userSrv.getNotifications(this.authSrv.getToken(), idList).then( res => {
-      this.notifications = res;
+    await this.userSrv.getNotifications(this.authSrv.getToken(), idList).then( async (res) => {
+      res.forEach(async (notInfo) => {
+        //Obtiene userInfo de cada Notificacion
+        await this.userSrv.getUsersById(this.authSrv.getToken(), notInfo.emiterUserId).then( async users => {
+          for(let user of users){
+            if(user.profileImg != '' && user.profileImg != null && user.profileImg != undefined){
+              await this.authSrv.getProfileImg(user.profileImg).then( img => {
+                let reader = new FileReader();
+                if(!img.error){ 
+                  reader.readAsDataURL(img);
+                  reader.onload = (_event) => {
+                    notInfo.profileImg = reader.result.toString();
+                  }
+                }else{notInfo.profileImg = '';}
+              });
+            }else{
+              notInfo.profileImg = '';
+            }
+          };
+        });
+
+        this.notifications.push(notInfo);
+      });
+      
     });
   }
 
@@ -61,6 +83,7 @@ export class NotificationsComponent implements OnInit {
     }
     this.userSrv.acceptFriendRequest( this.authSrv.getToken(), body).then( res => {
       console.log(res);
+      this.notifications = this.notifications.filter( not => not != notification);
     });
   }
 

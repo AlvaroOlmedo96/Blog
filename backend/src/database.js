@@ -4,7 +4,7 @@ import * as config from './config';
 const dbDev = config.default.databaseDevURL;
 const dbProd = config.default.databaseProdURL;
 
-mongoose.connect(dbProd, {
+mongoose.connect(dbDev, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,

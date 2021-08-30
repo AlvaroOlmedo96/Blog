@@ -100,11 +100,10 @@ export class NavbarComponent implements OnInit {
         }else{
           this.recommendedListSearched = res;
         }
-        console.log("USERSBYNAME", this.recommendedListSearched);
         
         //Si ya es mi contacto eliminar de la lista
         this.recommendedListSearched.filter( recUser => this.user.contacts.find(u => { if(u === recUser.id){recUser.isContact = true;} } ));
-        console.log("USERSBYNAME NO CONTACTS", this.recommendedListSearched);
+        console.log("ES CONTACTO???", this.recommendedListSearched);
 
         await this.recommendedListSearched.forEach( async user => {
           if(user.imgProfile != ''){

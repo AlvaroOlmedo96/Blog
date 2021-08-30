@@ -15,7 +15,8 @@
                         <div *ngFor="let not of notifications" class="appear row justify-content-center col-12 m-0 p-0 pl-1 pr-2 mt-3">
                             <div class="col-10 p-0 m-0 row justify-content-center" style="cursor: pointer;">
                                 <div class="col-3 col-md-2 text-center p-0">
-                                    <img src="../../../assets/defaultProfile.png" alt="Avatar" class="avatar img-fluid">
+                                    <img *ngIf="not.profileImg == '' " src="../../../assets/defaultProfile.png" alt="Avatar" class="avatar img-fluid">
+                                    <img *ngIf="not.profileImg != '' " src="{{not.profileImg}}" alt="Avatar" class="avatar img-fluid">
                                 </div>
                                 <div class="col-9 col-md-10 p-0 m-0 row">
                                     <span class="col-12 p-0">{{not.emiterUsername}}</span>
