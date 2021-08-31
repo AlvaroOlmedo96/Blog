@@ -7,7 +7,7 @@ const postSchema = new Schema({
     description: String,
     propietaryId: String,
     propietaryUsername: String,
-    likes: Number,
+    likes: [],
     comments: []
 }, {
     timestamps: true,

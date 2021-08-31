@@ -23,8 +23,8 @@ export const signUp = async (req, res) => {
         chats: [],
         contacts: [],
         posts: [],
-        likes: 0,
-        views: 0
+        likes: [],
+        views: []
     });
 
     if(roles){

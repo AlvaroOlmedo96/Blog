@@ -22,11 +22,11 @@
                         </div>
                         <div class="col-6 col-lg-4 m-0 p-0 text-center text-info">
                             <p class="m-0">Visitas</p>
-                            <span>{{user.views}}</span>
+                            <span>{{user.views.length}}</span>
                         </div>
                         <div class="col-12 col-lg-4 m-0 p-0 text-center text-info">
                             <p class="m-0">Likes</p>
-                            <span>{{user.likes}}</span>
+                            <span>{{user.likes.length}}</span>
                         </div>
                     </div>
                 </div>
@@ -74,8 +74,15 @@
                         <h6 class="card-text">{{post.description}}</h6>
                         <hr>
                         <h6 class="row col-12 m-0 p-0 mb-1">
-                            <i class="col-4 m-0 p-0 pi pi-heart" style="cursor: pointer;"><span> {{post.likes}}</span></i>
-                            <a class="col-8 m-0 p-0 text-right text-secondary font-weight-light" style="cursor: pointer;">{{post.comments.length}} Comentarios</a>
+                            <div class="col-12 row text-left">
+                                <!--<i class="mr-2 fa fa-heart heartIcons" #heartIcon id="heartIcon" (click)="likePost(heartIcon, post)" [style.color]="!post.likes.includes(user._id) ? 'rgb(168, 168, 168)' : 'red'"></i>-->
+                                <i class="mr-2 fa fa-heart heartIcon" #heartIcon (click)="likePost(heartIcon, post)" [style.color]="!post.likes.includes(user._id) ? 'rgb(168, 168, 168)' : 'red'"></i>
+                                <i class="mr-2 p-0 pi pi-comment" style="cursor: pointer;"></i>
+                            </div>
+                            <div class="col-12 row mt-2">
+                                <span class="col-6 small-text p-0">{{post.likes.length}} likes</span>
+                                <span class="col-6 small-text p-0 text-right">{{post.comments.length}} Comentarios</span>
+                            </div>
                         </h6>
                     </div>
                 </div>

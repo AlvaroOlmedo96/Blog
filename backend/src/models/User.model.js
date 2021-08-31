@@ -22,13 +22,19 @@ const userSchema = new Schema({
     profileCoverImg: String,
     notifications: [{
         send: String,
-        receive: String
+        receive: String,
+        isReaded: Boolean
     }],
     chats: [],
     contacts: [],
     posts: [],
-    views: Number,
-    likes: Number
+    views: [],
+    likes: [{
+        _id: false,
+        postId: String,
+        usersLikedPost: String
+    }],
+    likedPosts: []
 }, {
     timestamps: true,
     versionKey: false

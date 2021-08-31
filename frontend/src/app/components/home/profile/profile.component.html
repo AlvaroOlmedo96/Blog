@@ -35,7 +35,7 @@
                         
                         <div class="col-12 p-0 m-0">
                             <div class="col-12 row m-0 p-0">
-                                <span class="col-10 small-text">{{post.createdAt | date:'shortDate'}}</span>
+                                <span class="col-10 small-text">{{post.createdAt | date:'dd/MM/YY'}}</span>
                                 <div class="text-right col-2">
                                     <button class="btn p-0" (click)="[settingsPost.toggle($event), getLastPost(post)]"><i class="pi pi-ellipsis-h"></i></button>
                                     <p-menu #settingsPost [popup]="true" [model]="postSettings" [appendTo]="'body'"></p-menu> 
@@ -47,7 +47,7 @@
                                 <h6 class="card-text">{{post.description}}</h6>
                                 <hr>
                                 <h6 class="row col-12 m-0 p-0 mb-1">
-                                    <span class="col-4 m-0 p-0 text-secondary">{{post.likes}} likes</span>
+                                    <span class="col-4 m-0 p-0 text-secondary">{{post.likes.length}} likes</span>
                                     <a class="col-8 m-0 p-0 text-right text-secondary font-weight-light" style="cursor: pointer;">{{post.comments.length}} Comentarios</a>
                                 </h6>
                             </div>

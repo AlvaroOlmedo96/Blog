@@ -21,11 +21,11 @@
                                 <div class="col-9 col-md-10 p-0 m-0 row">
                                     <span class="col-12 p-0">{{not.emiterUsername}}</span>
                                     <span class="col-12 p-0 text-info">{{not.description}}</span>
-                                    <small class="small-text">{{not.createdAt | date:'shortDate'}}</small>
+                                    <small class="small-text">{{not.createdAt | date:'dd/MM/YY hh:mm:ss a'}}</small>
                                 </div>
                             </div>
                             <div class="col-2 p-0 m-0 text-right row align-content-middle">
-                                <div class="col-12 p-0" style="top:0px">
+                                <div class="col-12 p-0" style="top:0px" *ngIf="not.type == 'friendRequest'">
                                     <button class="col-12 p-1 btn btn-outline-primary" (click)="acceptFriendRequest(not)">
                                         <i class="pi pi-user-plus"></i>
                                         <span class="d-none d-md-inline">&nbsp;Aceptar</span>

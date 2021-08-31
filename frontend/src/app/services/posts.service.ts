@@ -72,7 +72,6 @@ export class PostsService {
   async getPostImage(token, imageURL){
     const headerType = 'x-access-token';
     const headers = {[headerType]: token};
-    console.log(imageURL);
     const params = {
       path: imageURL.replace('src/','').replace('public/','')
     }
@@ -105,7 +104,23 @@ export class PostsService {
     }).catch( error => {
       return error;
     });
-    
+  }
+
+  async likePost(token, currentId, postId, propietaryOfPostId, notification){
+    const headerType = 'x-access-token';
+    const headers = {[headerType]: token};
+    const body = {
+      currentId: currentId,
+      postId: postId,
+      propietaryOfPostId: propietaryOfPostId,
+      notification: notification
+    }
+    console.log("BODY", body);
+    return await this.http.post(`${this.url}/api/posts/likePost`, body, { headers: headers }).toPromise().then( res => {
+        return res;
+    }).catch( error => {
+        return error;
+    });
   }
 
 

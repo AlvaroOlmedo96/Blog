@@ -120,11 +120,10 @@ export const getProfileImages = async (req, res) => {
 //PEDIR Solicitud de amistad
 export const friendRequest = async (req, res) => {
     const {notification} = req.body;
-    console.log(req.body);
     const newNotification = new Notifications(notification);
     const notificationSaved = await newNotification.save();
     const emiterUser = await User.findByIdAndUpdate(notification.emiterUserId, {$push: {"notifications": {"send": notificationSaved._id.toString()} }});
-    const receiverUser = await User.findByIdAndUpdate(notification.receiveUserId, {$push: {"notifications": {"receive": notificationSaved._id.toString()} }});
+    const receiverUser = await User.findByIdAndUpdate(notification.receiveUserId, {$push: {"notifications": {"receive": notificationSaved._id.toString(), "isReaded": false} }});
     
     //SOCKET.IO PARA NOTIFICAR AL RECEPTOR DE LA NOTIFICACION
     let socketId = socketIO.getUserById(notification.receiveUserId);
@@ -141,7 +140,6 @@ export const acceptFriendRequest = async (req, res) => {
         //Comprobar primero si ya son contactos
         const alreadyEmiterContact = await User.find({_id:emiterUserId, "contacts": receiverUserId});
         const alreadyReceiverContact = await User.find({_id:receiverUserId, "contacts": emiterUserId});
-        console.log("=====alreadyContact======",alreadyEmiterContact.length, '/', alreadyReceiverContact.length);
         if(alreadyEmiterContact.length <= 0 && alreadyReceiverContact.length <= 0){
             //Añadir contacto en ambos usuarios
             await User.findByIdAndUpdate( emiterUserId, {$push: {"contacts": receiverUserId.toString() }} );
@@ -184,29 +182,35 @@ export const declineFriendRequest = async (req, res) => {
 
 export const getNotificationsById = async (req, res) => {
     const { idList } = req.body;
-    console.log(idList)
     let notificationsList = [];
     try {
         if(idList != undefined && idList.length > 0){
-            if(Array.isArray(idList)){
-                for(let id of idList){
-                    const notification = await Notifications.findById(id);
-                    if(notification != null){
-                        notificationsList.push(notification);
-                    }
+            if(Array.isArray(idList)){ 
+                const notification = await Notifications.find({_id: {$in: idList}}).sort({$natural:-1}).limit(100);
+                if(notification != null){
+                    notificationsList = notification;
                 }
             }else{
-                const notification = await Notifications.findById(idList);
+                const notification = await Notifications.findById(idList).sort({$natural:-1}).limit(100);
                 if(notification != null){
-                    notificationsList.push(notification);
+                    notificationsList = notification;
                 }
             }
         }
-        notificationsList.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)); //Ordenamos por los mas recientes
+        //notificationsList.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)); //Ordenamos por los mas recientes
         res.json(notificationsList);
     } catch (error) {
         res.status(500).json({msg: 'Server error for getNotificationsById', error: error});
     }
+}
+
+export const updateReadedNotification = async (userId, notification) => {
+    console.log("updateReadedNotification", userId, notification);
+    const aux = await User.findByIdAndUpdate( 
+        userId, 
+        {$set: {"notifications.$[elem].isReaded": true} },
+        {arrayFilters: [{"elem._id": notification._id} ], returnOriginal: false}, 
+    );
 }
 
 

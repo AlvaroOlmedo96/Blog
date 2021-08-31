@@ -9,11 +9,16 @@ export interface User{
     profileCoverImg?: string,
     notifications?: [{
         send: string,
-        receive: string
+        receive: string,
+        isReaded: boolean
     }],
     chats?: [],
     contacts?: [],
     posts?: [],
-    views?: number,
-    likes?: number
+    views?: [],
+    likes?: [{
+        postId: string,
+        usersLikedPost: string
+    }],
+    likedPosts?: []
 }

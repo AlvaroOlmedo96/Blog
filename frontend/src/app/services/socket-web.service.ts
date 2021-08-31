@@ -10,6 +10,7 @@ export class SocketWebService extends Socket{
   cb_userConnection: EventEmitter<any> = new EventEmitter();
   cb_newPost: EventEmitter<any> = new EventEmitter();
   cb_newNotification: EventEmitter<any> = new EventEmitter();
+  cb_newLike: EventEmitter<any> = new EventEmitter();
 
   constructor() {
     super({
@@ -27,10 +28,15 @@ export class SocketWebService extends Socket{
     this.ioSocket.on('newPost', res => this.cb_newPost.emit(res)); 
     this.ioSocket.on('getUsers', res => this.cb_userConnection.emit(res)); 
     this.ioSocket.on('newNotification', res => this.cb_newNotification.emit(res)); 
+    this.ioSocket.on('newLike', res => this.cb_newLike.emit(res)); 
   }
 
   createUserSocketId = (userId) => {
     this.ioSocket.emit('addUserSocketId', userId);
+  }
+
+  updateReadedNotification = (userId, notification) => {
+    this.ioSocket.emit('readedNotification', userId, notification);
   }
 
   //Se encarga de emitir eventos desde el Front al Back

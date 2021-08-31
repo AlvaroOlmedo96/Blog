@@ -42,8 +42,8 @@
         </li>
         <li class="nav-item row text-center p-1 m-1" (click)="collapseNavbar()" (click)="navigateTo('notifications')" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}">
           <div class="col-12 p-0 m-0">
-            <i *ngIf="notifications.length > 0" class="pi pi-bell" pBadge style="font-size: 2rem" severity="danger" value="{{notifications.length}}"></i>
-            <i *ngIf="!notifications.length" class="pi pi-bell" style="font-size: 2rem"></i>
+            <i *ngIf="noReadedNotifications.length > 0" class="pi pi-bell" pBadge style="font-size: 2rem" severity="danger" value="{{noReadedNotifications.length}}"></i>
+            <i *ngIf="!noReadedNotifications.length" class="pi pi-bell" style="font-size: 2rem"></i>
           </div>
           <a class="nav-link col-12 p-0 m-0">Notificaciones</a>
         </li>

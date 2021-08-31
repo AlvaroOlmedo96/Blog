@@ -45,10 +45,11 @@ export class NavbarComponent implements OnInit {
     socketSrv.cb_newNotification.subscribe( res => {
       console.log("SOCKET cb_newNotification Navbar", res);
       this.notifications.push(res);
-      let severity = 'success';//success info warn error
+      let severity = 'info';//success info warn error
       if(res.type == 'friendRequest'){
-        severity = 'info';
+        severity = 'success';
       }
+      this.checkReadedNotifications();
       this.messageService.add({severity: severity, summary:`${res.emiterUsername}`, detail:`${res.description}`});
     });
 
@@ -65,15 +66,32 @@ export class NavbarComponent implements OnInit {
         this.authSrv.signOut();
       }}
     ];
+    
 
   }
 
   navigateTo(ruta){
     let params = { 'user': JSON.stringify(this.user) };
     if(ruta == 'home'){this.router.navigate(['/home']);}
-    console.log(this.user);
-    if(ruta == 'notifications'){this.router.navigate(['/home/notifications'], {queryParams: params});}
+    if(ruta == 'notifications'){
+      this.notifications.forEach(not => {
+        not.isReaded = true;
+        this.socketSrv.updateReadedNotification(this.user._id, not);//Actualizamos la notificacion a leída.
+      });
+      this.checkReadedNotifications();
+      this.router.navigate(['/home/notifications'], {queryParams: params});
+    }
     if(ruta == 'profile'){this.router.navigate(['/home/profile']);}
+  }
+
+  noReadedNotifications = [];
+  checkReadedNotifications(){
+    this.noReadedNotifications = [];
+    for(let not of this.notifications){
+      if(!not.isReaded){
+        this.noReadedNotifications.push(not);
+      }
+    }
   }
 
   collapseNavbar(){
@@ -86,6 +104,7 @@ export class NavbarComponent implements OnInit {
     this.authSrv.currentUser().then( (res:User) => {
       this.user = res;
       this.notifications = res.notifications.filter( not => not.receive);
+      this.checkReadedNotifications();
       this.socketSrv.createUserSocketId(this.user._id);//Creamos un socketID para el usuario
     });
   }
@@ -103,7 +122,6 @@ export class NavbarComponent implements OnInit {
         
         //Si ya es mi contacto eliminar de la lista
         this.recommendedListSearched.filter( recUser => this.user.contacts.find(u => { if(u === recUser.id){recUser.isContact = true;} } ));
-        console.log("ES CONTACTO???", this.recommendedListSearched);
 
         await this.recommendedListSearched.forEach( async user => {
           if(user.imgProfile != ''){
@@ -127,7 +145,6 @@ export class NavbarComponent implements OnInit {
   }
 
   async sendFriendRequest(user){
-    console.log(user);
     let newNotification:Notifications = {
       type: 'friendRequest',
       emiterUserId: this.user._id,
@@ -139,15 +156,11 @@ export class NavbarComponent implements OnInit {
     let body = {
       notification: newNotification,
     }
-    console.log(body);
 
     this.userSrv.friendRequest(this.authSrv.getToken(), body).then( res => {
-      console.log(res);
+      
     });
   }
 
-  async checkNotifications(){
-
-  }
 
 }

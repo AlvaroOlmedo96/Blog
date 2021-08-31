@@ -39,7 +39,7 @@ app.use('/api/uploads/profile', authJwt.verifyToken, express.static(path.join(__
 
 //Requiere esta configuracion para que funcione socket.io
 const server = require('http').createServer(app);
-socketIO.connection(server, whitelist);
+socketIO.connection(server, true);
 
 
 export default server;

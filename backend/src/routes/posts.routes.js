@@ -13,5 +13,7 @@ router.delete('/deletePostById', authJwt.verifyToken, postsCtrl.deletePostById);
 router.post('/uploadPostImage', authJwt.verifyToken, multer.uploadSingleImage, postsCtrl.uploadPostImage);
 router.get('/imagesPosts', authJwt.verifyToken, postsCtrl.getImagesOfPosts);
 
+router.post('/likePost', authJwt.verifyToken, postsCtrl.likePost);
+
 
 export default router;

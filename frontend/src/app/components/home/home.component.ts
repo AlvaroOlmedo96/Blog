@@ -2,6 +2,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MenuItem, MessageService } from 'primeng/api';
+import { Notifications } from 'src/app/models/notifications.model';
 import { Post } from 'src/app/models/posts.model';
 import { User } from 'src/app/models/user.model';
 import { AuthService } from 'src/app/services/auth.service';
@@ -65,6 +66,13 @@ export class HomeComponent implements OnInit {
       console.log("SOCKET cb_userConnection", res);
       this.friendsList.filter( u => res.find(connect => { if(connect.userId === u._id){u.online = true;} } ));
       console.log("ONLINE", this.friendsList);
+    });
+    socketSrv.cb_newLike.subscribe( async res => {
+      console.log("SOCKET cb_newLike", res);
+      if(this.listPost.filter(post => post._id.includes(res._id))){
+        let index = this.listPost.indexOf(this.listPost.find(post => post._id.includes(res._id)));
+        this.listPost[index].likes = res.likes;
+      }
     });
 
     this.postSettings = [
@@ -145,9 +153,8 @@ export class HomeComponent implements OnInit {
     let usersId = [];
     this.usersOfPost = [];
     this.newPublications = false;
-    console.log(this.user.contacts);
     await this.postSrv.getPosts(this.authSrv.getToken(), [...this.user.contacts], this.user._id).then( async (res) => {
-      console.log(res);
+      console.log("POSTS =>", res);
       if(res.length > 0){
         this.listPost = [];
         for(let post of res){
@@ -220,7 +227,7 @@ export class HomeComponent implements OnInit {
         title: this.postForm.controls['title'].value,
         imgURL: '', 
         description: this.postForm.controls['description'].value,
-        likes: 0,
+        likes: [],
         propietaryId: this.user._id,
         propietaryUsername: this.user.username
       }
@@ -299,6 +306,33 @@ export class HomeComponent implements OnInit {
     this.fileOverLimit = true;
     this.compressingFile = false;
     this.uploadFileErrorMsg = 'Formato no admitido. Solo imagenes.'
+  }
+
+
+
+  async likePost(heartIcon, post){
+    let postId = post._id;
+    let newNotification:Notifications = {
+      type: 'like',
+      emiterUserId: this.user._id,
+      emiterUsername: this.user.username,
+      receiveUserId: post.propietaryId,
+      receiveUsername: post.propietaryUsername,
+      description: 'Le ha gustado tu publicación'
+    }
+    heartIcon.classList.remove("is-like");
+    heartIcon.classList.remove("is-dislike");
+    await this.postSrv.likePost(this.authSrv.getToken(), this.user._id, postId, post.propietaryId, newNotification).then( res => {
+      if(res.msg == "like"){
+        heartIcon.classList.remove("fa-heart-broken");
+        heartIcon.classList.add("fa-heart");
+        heartIcon.classList.add("is-like");
+      }if(res.msg == "dislike"){
+        heartIcon.classList.remove("fa-heart");
+        heartIcon.classList.add("fa-heart-broken");
+        heartIcon.classList.add("is-dislike");
+      }
+    });
   }
 
 }

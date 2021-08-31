@@ -49,7 +49,9 @@ export class NotificationsComponent implements OnInit {
     let idList = [];
     this.user.notifications.filter( n => { if(n.receive != undefined && n.receive != null && n.receive != ''){idList.push(n.receive);} });
     await this.userSrv.getNotifications(this.authSrv.getToken(), idList).then( async (res) => {
+      console.log("getNotifications()", res);
       res.forEach(async (notInfo) => {
+        this.notifications.push(notInfo);
         //Obtiene userInfo de cada Notificacion
         await this.userSrv.getUsersById(this.authSrv.getToken(), notInfo.emiterUserId).then( async users => {
           for(let user of users){
@@ -68,8 +70,6 @@ export class NotificationsComponent implements OnInit {
             }
           };
         });
-
-        this.notifications.push(notInfo);
       });
       
     });
@@ -82,7 +82,6 @@ export class NotificationsComponent implements OnInit {
       notificationId: notification._id
     }
     this.userSrv.acceptFriendRequest( this.authSrv.getToken(), body).then( res => {
-      console.log(res);
       this.notifications = this.notifications.filter( not => not != notification);
     });
   }
@@ -94,7 +93,6 @@ export class NotificationsComponent implements OnInit {
       notificationId: notification._id
     }
     this.userSrv.declineFriendRequest( this.authSrv.getToken(), body).then( res => {
-      console.log(res);
       this.notifications = this.notifications.filter( not => not != notification);
     });
   }

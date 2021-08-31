@@ -5,7 +5,7 @@ export interface Post{
     description?: String,
     propietaryId?: string,
     propietaryUsername?: string,
-    likes?: Number,
+    likes?: [],
     comments?: [],
     createdAt?: Date
 }

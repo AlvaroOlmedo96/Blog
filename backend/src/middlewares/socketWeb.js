@@ -1,3 +1,5 @@
+import * as usersCtrl from '../controllers/users.controller';
+
 
 let socket;
 let ioSocket;
@@ -28,6 +30,10 @@ export const connection = (server, whitelist) => {
             removeUser(socket.id);
             io.emit("getUsers", users);
         }); 
+
+        socket.on('readedNotification', (userId, notification) => {
+            usersCtrl.updateReadedNotification(userId, notification);
+        });
     });
 }
 
@@ -54,8 +60,8 @@ export const getUserById = (userId) => {
 }
 
 const removeUser = (socketId) => {
-    users = users.filter((user) => user.socketId !== socketId);
-    console.log("USUARIOS CONECTADOS", users);
+    /*users = users.filter((user) => user.socketId !== socketId);
+    console.log("USUARIOS CONECTADOS", users);*/
 }
 
 //module.exports = {connection, getSocket};
