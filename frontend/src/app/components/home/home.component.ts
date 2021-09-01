@@ -74,6 +74,14 @@ export class HomeComponent implements OnInit {
         this.listPost[index].likes = res.likes;
       }
     });
+    socketSrv.cb_newComment.subscribe( async res => {
+      console.log("SOCKET cb_newComment", res);
+      if(this.listPost.filter(post => post._id.includes(res._id))){
+        let index = this.listPost.indexOf(this.listPost.find(post => post._id.includes(res._id)));
+        //this.listPost[index].comments = res.comments;
+        this.addUsersOfComments(res.comments, index);
+      }
+    });
 
     this.postSettings = [
       {label: 'Ocultar publicaciones', icon: 'pi pi-eye-slash', command: () => {
@@ -309,7 +317,6 @@ export class HomeComponent implements OnInit {
   }
 
 
-
   async likePost(heartIcon, post){
     let postId = post._id;
     let newNotification:Notifications = {
@@ -333,6 +340,99 @@ export class HomeComponent implements OnInit {
         heartIcon.classList.add("is-dislike");
       }
     });
+  }
+
+  emojiIconList = ['😀','😁','😂','😃','😄','😅','😆','😇','😈','😉','😊','😋','😌','😍','😎','😏','😐','😑','😒','😓',
+  '😔','😕','😖','😗','😘','😛','😜','😝','😠','😡','😢','😤','😨','😪','😬','😭','😮','😱','😳','😵','😷','🙃','🤑',
+  '🤒','🤕','🤡','🤢','🤣','🤥','🤪','🤬','🤮','🤯','🧐'];
+  openEmojis(emojis: HTMLInputElement){
+    if(emojis.style.visibility === 'visible'){
+      emojis.setAttribute('style', 'display:none');
+    }else{
+      emojis.setAttribute('style', 'visibility:visible');
+    }
+  }
+
+  comment: string = '';
+  openWriteComment(showCommentBox: HTMLInputElement){
+    if(showCommentBox.style.visibility === 'visible'){
+      showCommentBox.setAttribute('style', 'display:none');
+    }else{
+      showCommentBox.setAttribute('style', 'visibility:visible');
+    }
+  }
+
+  writeEmoji(emoji){
+    this.comment += emoji;
+  }
+
+  async sendComment(post, showCommentBox){
+    let postId = post._id;
+    let newNotification:Notifications = {
+      type: 'comment',
+      emiterUserId: this.user._id,
+      emiterUsername: this.user.username,
+      receiveUserId: post.propietaryId,
+      receiveUsername: post.propietaryUsername,
+      description: 'Ha comentado tu publicación'
+    }
+    await this.postSrv.postComment(this.authSrv.getToken(), this.user._id, postId, post.propietaryId, this.comment, newNotification).then( res => {
+      this.openWriteComment(showCommentBox);
+      this.comment = '';
+    });
+  }
+
+  comments = [];
+  showComments(comments, index, showCommentaries: HTMLInputElement){
+    if(showCommentaries.style.visibility === 'visible'){
+      showCommentaries.setAttribute('style', 'display:none');
+    }else{
+      showCommentaries.setAttribute('style', 'visibility:visible');
+    }
+    this.addUsersOfComments(comments, index);
+  }
+
+  addUsersOfComments(comments, index){
+    //Si existe el campo username significa que ya se han buscado comentarios antes, y el campo comments del Post esta modificado (con los datos de usuarios y comentario añadidos)
+    if(!comments[0].username){
+      let userIds = [];
+      for(let com of comments){
+        userIds.push(com.writer);
+      }
+
+      //Unimos los arrays de los comentarios y la info de los usuarios
+      this.getUsersById(userIds).then( users => {
+        let userOfComment = users.filter(u => comments.find(com => u._id === com.writer));
+        let commentOfUser = comments.filter(com => users.find(u => u._id === com.writer));
+        for(let u in userOfComment){
+          userOfComment[u].comment = commentOfUser[u];
+        }
+        this.listPost[index].comments = userOfComment;
+      });
+    }
+  }
+
+  async getUsersById(userIds){
+    let users = [];
+    await this.userSrv.getUsersById(this.authSrv.getToken(), userIds).then( async res => {
+      for(let user of res){
+        if(user.profileImg != '' && user.profileImg != null && user.profileImg != undefined){
+          await this.authSrv.getProfileImg(user.profileImg).then( img => {
+            let reader = new FileReader();
+            if(!img.error){ 
+              reader.readAsDataURL(img);
+              reader.onload = (_event) => {
+                user.profileImg = reader.result.toString();
+              }
+            }else{user.profileImg = '';}
+            users.push(user);
+          });
+        }else{
+          users.push(user);
+        }
+      };
+    });
+    return users;
   }
 
 }

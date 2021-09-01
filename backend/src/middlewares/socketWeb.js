@@ -20,15 +20,16 @@ export const connection = (server, whitelist) => {
         ioSocket = io;
 
         socket.on('addUserSocketId', (userId) => {
-            console.log("SOCKET.IO USUARIO CONECTADO", userId, socket.id);
+            console.log("SOCKET.IO USUARIO CONECTADO - userId/socketId =>", userId, socket.id);
             addUser(userId, socket.id);
             io.emit("getUsers", users);
         }); 
 
         socket.on('disconnect', (userId) => {
-            console.log("SOCKET.IO USUARIO DESCONECTADO", userId);
-            removeUser(socket.id);
-            io.emit("getUsers", users);
+            console.log("SOCKET.IO USUARIO DESCONECTADO", socket.id);
+            let remainingUsers = removeUser(socket.id);
+            console.log("USUARIOS RESTANTES", remainingUsers);
+            io.emit("getUsers", remainingUsers);
         }); 
 
         socket.on('readedNotification', (userId, notification) => {
@@ -44,6 +45,7 @@ export const getIo = () => ioSocket;
 const addUser = (userId, socketId) => {
     if(!users.some( (u) => u.userId === userId )){
         users.push({userId: userId, socketId: socketId});
+        //users[socketId] = userId;
     }else{
         let user = users.find( u => u.userId === userId);
         let index = users.indexOf(user);
@@ -60,8 +62,9 @@ export const getUserById = (userId) => {
 }
 
 const removeUser = (socketId) => {
-    /*users = users.filter((user) => user.socketId !== socketId);
-    console.log("USUARIOS CONECTADOS", users);*/
+    console.log("USUARIO A ELIMINAR --- socket/users", socketId, users);
+    users = users.filter((user) => user.socketId !== socketId);
+    return users;
 }
 
 //module.exports = {connection, getSocket};

@@ -8,7 +8,11 @@ const postSchema = new Schema({
     propietaryId: String,
     propietaryUsername: String,
     likes: [],
-    comments: []
+    comments: [{
+        comment: String,
+        writer: String,
+        createdAt: Date
+    }]
 }, {
     timestamps: true,
     versionKey: false

@@ -73,7 +73,6 @@ export const getPosts = async (req, res) => {
 
             //const posts = await Post.find();
             postsList.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)); //Ordenamos por los mas recientes
-            console.log("POSTLIST", postsList);
             res.json(postsList);
     } catch (error) {
             res.status(500).json({msg: 'Server error for getPost'});
@@ -119,20 +118,20 @@ export const deletePostById = async (req, res) => {
                     if(err){
                         return;
                     }
-                    res.json({deletedPost:deletedPost, deletedUserPost:deletedUserPost, msg: "Con imagen. Eliminado correctamente"});
+                    res.json({msg: "Con imagen. Eliminado correctamente"});
                 });
             }else{
                 res.status(301).json({msg: 'File not found for deletePostById'});
             }
         });
     }else{
-        res.json({deletedPost:deletedPost, deletedUserPost:deletedUserPost, msg: "Sin imagen. Eliminado correctamente"});
+        res.json({msg: "Sin imagen. Eliminado correctamente"});
     }
 }
 
 //LIKES POST
 export const likePost = async (req, res) => {
-    //try{
+    try{
         const {currentId, postId, propietaryOfPostId, notification} = req.body;
 
         //Comprobamos si ya se habia dado like
@@ -189,9 +188,45 @@ export const likePost = async (req, res) => {
 
             res.json({msg:"like"});
         }
-    /*}catch{
+    }catch{
         res.status(500).json({msg: 'Server error for likePost'});
-    }*/
+    }
+}
+
+//POST COMMENT
+export const postComment = async (req, res) => {
+    const {currentId, postId, propietaryOfPostId, comment, notification} = req.body;
+
+    
+    //Guardar comentario y userId(el que hizo el comentario) en el post
+    const commentedPost = await Post.findByIdAndUpdate(postId, {$push: 
+        {
+            "comments": {
+                comment: comment,
+                writer: currentId,
+                createdAt: new Date()
+            }
+        }
+    }, {returnOriginal: false});
+    
+    //Refrescar Comentarios en tiempo real con socket.io
+    socketIO.getSocket().on('newComment', res => {});
+    socketIO.getIo().emit('newComment', commentedPost);
+
+    //Creamos una notificacion de Comentario
+    console.log("NOTIFICACION DE Comentario", notification);
+    const newNotification = new Notifications(notification);
+    const notificationSaved = await newNotification.save();
+    const emiterUser = await User.findByIdAndUpdate(notification.emiterUserId, {$push: {"notifications": {"send": notificationSaved._id.toString()} }});
+    const receiverUser = await User.findByIdAndUpdate(notification.receiveUserId, {$push: {"notifications": {"receive": notificationSaved._id.toString(), "isReaded": false} }});
+    
+    //SOCKET.IO PARA NOTIFICAR AL RECEPTOR DE LA NOTIFICACION
+    let socketId = socketIO.getUserById(notification.receiveUserId);
+    if(socketId != undefined && socketId != null && socketId != ''){//Si el usuario destinatario esta conectado se enviara la notificacion socket
+        socketIO.getIo().to(socketId).emit('newNotification', notificationSaved);
+    }
+
+    res.json({msg:"Comentario publicado."});
 }
 
 

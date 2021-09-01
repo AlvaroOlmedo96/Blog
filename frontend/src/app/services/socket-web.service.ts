@@ -11,6 +11,7 @@ export class SocketWebService extends Socket{
   cb_newPost: EventEmitter<any> = new EventEmitter();
   cb_newNotification: EventEmitter<any> = new EventEmitter();
   cb_newLike: EventEmitter<any> = new EventEmitter();
+  cb_newComment: EventEmitter<any> = new EventEmitter();
 
   constructor() {
     super({
@@ -29,6 +30,7 @@ export class SocketWebService extends Socket{
     this.ioSocket.on('getUsers', res => this.cb_userConnection.emit(res)); 
     this.ioSocket.on('newNotification', res => this.cb_newNotification.emit(res)); 
     this.ioSocket.on('newLike', res => this.cb_newLike.emit(res)); 
+    this.ioSocket.on('newComment', res => this.cb_newComment.emit(res)); 
   }
 
   createUserSocketId = (userId) => {

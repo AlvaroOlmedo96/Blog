@@ -123,5 +123,23 @@ export class PostsService {
     });
   }
 
+  async postComment(token, currentId, postId, propietaryOfPostId, comment, notification){
+    const headerType = 'x-access-token';
+    const headers = {[headerType]: token};
+    const body = {
+      currentId: currentId,
+      postId: postId,
+      propietaryOfPostId: propietaryOfPostId,
+      comment: comment,
+      notification: notification
+    }
+    console.log("BODY", body);
+    return await this.http.post(`${this.url}/api/posts/postComment`, body, { headers: headers }).toPromise().then( res => {
+        return res;
+    }).catch( error => {
+        return error;
+    });
+  }
+
 
 }

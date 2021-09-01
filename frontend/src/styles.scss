@@ -46,6 +46,7 @@ body{
     animation: appearAnim;
     animation-duration: 0.75s;
     animation-fill-mode: forwards;
+    transition: 0.25s ease-in-out;
 }
 
 @keyframes appearAnim{
@@ -106,6 +107,7 @@ body{
 
 //LIKE ANIMATION
 .heartIcon{
+    font-size: 24px;
     cursor: pointer;
     color: rgb(168, 168, 168);
     transition: 0.25s ease-in-out;
@@ -151,3 +153,37 @@ body{
     100% { transform: translate(1px, -2px) rotate(-10deg); }
 }
 
+.commentIcon{
+    font-size: 24px;
+    cursor: pointer;
+    color: rgb(168, 168, 168);
+    transition: 0.25s ease-in-out;
+}
+.commentIcon:hover{
+    transition: 0.25s ease-in-out;
+    transform: scale(1.2, 1.2);
+    color: rgb(74, 228, 255);
+}
+
+.emojiList{
+    font-size:1rem; 
+    display: inline-block;
+    margin: 3.5px;
+    transition: 0.2s ease-in-out;
+    cursor: pointer;
+}
+.emojiList:hover{
+    transition: 0.2s ease-in-out;
+    transform: scale(2,2);
+}
+
+.commentsBtn{
+    cursor: pointer;
+}
+.commentsBtn:hover{
+   text-decoration: underline;
+}
+.commentBox{
+    background-color: #dbdbdb; 
+    border-radius: 0px 15px 15px 15px;
+}

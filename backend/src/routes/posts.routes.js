@@ -14,6 +14,7 @@ router.post('/uploadPostImage', authJwt.verifyToken, multer.uploadSingleImage, p
 router.get('/imagesPosts', authJwt.verifyToken, postsCtrl.getImagesOfPosts);
 
 router.post('/likePost', authJwt.verifyToken, postsCtrl.likePost);
+router.post('/postComment', authJwt.verifyToken, postsCtrl.postComment);
 
 
 export default router;

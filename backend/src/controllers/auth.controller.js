@@ -77,5 +77,6 @@ export const currentUser = async (req, res) => {
     const userId = await getUserId(token);
     const user = await User.findById(userId);
     if(!user) return res.status(404).json({message: 'User not found.'});
+    user.password = '';
     res.json(user);
 }

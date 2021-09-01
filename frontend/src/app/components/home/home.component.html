@@ -73,16 +73,51 @@
                         <h5 class="card-title">{{post.title}}</h5>
                         <h6 class="card-text">{{post.description}}</h6>
                         <hr>
-                        <h6 class="row col-12 m-0 p-0 mb-1">
-                            <div class="col-12 row text-left">
-                                <!--<i class="mr-2 fa fa-heart heartIcons" #heartIcon id="heartIcon" (click)="likePost(heartIcon, post)" [style.color]="!post.likes.includes(user._id) ? 'rgb(168, 168, 168)' : 'red'"></i>-->
+                        <h6 class="m-0 p-0 mb-1">
+                            <div class="col-12 row text-left m-0 p-0">
                                 <i class="mr-2 fa fa-heart heartIcon" #heartIcon (click)="likePost(heartIcon, post)" [style.color]="!post.likes.includes(user._id) ? 'rgb(168, 168, 168)' : 'red'"></i>
-                                <i class="mr-2 p-0 pi pi-comment" style="cursor: pointer;"></i>
+                                <i class="mr-2 fa fa-comment commentIcon" aria-hidden="true" (click)="openWriteComment(showCommentBox)"></i>
                             </div>
-                            <div class="col-12 row mt-2">
+                            <div class="col-12 row mt-2 m-0 p-0">
                                 <span class="col-6 small-text p-0">{{post.likes.length}} likes</span>
-                                <span class="col-6 small-text p-0 text-right">{{post.comments.length}} Comentarios</span>
+                                <span class="col-6 small-text p-0 text-right commentsBtn" (click)="showComments(post.comments, i, showCommentaries)">{{post.comments.length}} Comentarios</span>
                             </div>
+                            <!--CAJA DE COMENTARIOS-->
+                            <div #showCommentBox class="col-12 row mt-2 m-0 p-0 appear justify-content-center align-items-center" style="display:none">
+                                <div class="col-12 row mb-2 p-0 m-0 align-items-center justify-content-center">
+                                    <p class="p-0 mb-2 emojiList text-center" style="font-size: 1.5rem;" (click)="openEmojis(emojis)">😀</p>
+                                    <div class="col-12 p-0 appear" #emojis style="display:none;">
+                                        <p class="emojiList" *ngFor="let emoji of emojiIconList" (click)="writeEmoji(emoji)">{{emoji}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-2 col-sm-1 col-md-2 col-xl-1 p-0 text-center">
+                                    <img *ngIf="profileImg != '' " [src]="profileImg" alt="" class="avatar img-fluid">
+                                    <img *ngIf="profileImg == '' " src="../../../assets/defaultProfile.png" alt="../../../assets/defaultProfile.png" class="avatar img-fluid">
+                                </div>
+                                <div class="col-10 col-sm-11 col-md-10 col-xl-11 pr-0">
+                                    <textarea class="form-control rounded overflow-visible" [(ngModel)]="comment" rows="3" placeholder="Escribe un comentario..." id="floatingTextarea"></textarea>
+                                </div>
+                                <div class="col-12 text-right mt-2 p-0">
+                                    <button class="col-6 col-sm-4 p-0 btn btn-primary" (click)="sendComment(post, showCommentBox)">Enviar</button>
+                                </div>
+                            </div>
+                            <!--LISTA DE COMENTARIOS-->
+                            <div #showCommentaries style="display:none" class="appear mt-3">
+                                <div class="col-12 row mt-2 m-0 mb-2 p-0 p-0 justify-content-center" *ngFor="let commentUser of post.comments">
+                                    <div class="col-2 col-sm-1 col-md-2 col-xl-1 mr-xl-2 p-0 text-center">
+                                        <img *ngIf="commentUser.profileImg != ''" [src]="commentUser.profileImg" alt="{{commentUser.profileImg}}" class="avatar">
+                                        <img *ngIf="commentUser.profileImg == ''" src="../../../assets/defaultProfile.png" alt="../../../assets/defaultProfile.png" class="avatar">
+                                    </div>
+                                    <div class="col-10 col-sm-11 col-md-10 col-xl-9 p-2 commentBox">
+                                        <div class="row p-0 m-0">
+                                            <h6 class="col-12 p-0 small-text">{{commentUser.username}}</h6>
+                                            <span class="col-12 p-0" style="font-size: 14px;">{{commentUser.comment.comment}}</span>
+                                            <span class="col-12 p-0 small-text text-right m-0 mb-1">{{commentUser.comment.createdAt | date: 'dd/MM/YY HH:mm'}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
                         </h6>
                     </div>
                 </div>

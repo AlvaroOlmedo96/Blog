@@ -1,11 +1,15 @@
 export interface Post{
-    title?: String,
-    category?: String,
-    imgURL?: String,
-    description?: String,
+    title?: string,
+    category?: string,
+    imgURL?: string,
+    description?: string,
     propietaryId?: string,
     propietaryUsername?: string,
     likes?: [],
-    comments?: [],
+    comments?: [{
+        comment: string,
+        writer: string,
+        createdAt: Date
+    }],
     createdAt?: Date
 }
