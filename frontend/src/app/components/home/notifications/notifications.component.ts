@@ -42,6 +42,7 @@ export class NotificationsComponent implements OnInit {
   async getProfile(){
     await this.userSrv.getUserById(this.authSrv.getToken(), this.user._id).then( res => {
       this.user = res;
+      console.log(this.user);
     })
   }
 

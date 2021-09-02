@@ -12,7 +12,11 @@ export interface User{
         receive: string,
         isReaded: boolean
     }],
-    chats?: [],
+    chats?: [{
+        _id: string,
+        members: [],
+        typeChat: string
+    }],
     contacts?: [],
     posts?: [],
     views?: [],

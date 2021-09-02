@@ -121,9 +121,9 @@ export class HomeComponent implements OnInit {
 
   async initCharge(){
     await this.getProfile();
-    await this.getPosts();
     await this.getFriends();
     this.chargingData = false;
+    await this.getPosts();
   }
 
   async getFriends(){
@@ -376,23 +376,30 @@ export class HomeComponent implements OnInit {
       receiveUsername: post.propietaryUsername,
       description: 'Ha comentado tu publicación'
     }
-    await this.postSrv.postComment(this.authSrv.getToken(), this.user._id, postId, post.propietaryId, this.comment, newNotification).then( res => {
-      this.openWriteComment(showCommentBox);
-      this.comment = '';
-    });
+    if(this.comment.length > 0 && this.comment.trim().length > 0){
+      await this.postSrv.postComment(this.authSrv.getToken(), this.user._id, postId, post.propietaryId, this.comment, newNotification).then( res => {
+        this.openWriteComment(showCommentBox);
+        this.comment = '';
+      });
+    }
   }
 
   comments = [];
-  showComments(comments, index, showCommentaries: HTMLInputElement){
-    if(showCommentaries.style.visibility === 'visible'){
-      showCommentaries.setAttribute('style', 'display:none');
-    }else{
-      showCommentaries.setAttribute('style', 'visibility:visible');
+  chargedComments: boolean = false;
+  async showComments(comments, index, showCommentaries: HTMLInputElement){
+    this.chargedComments = false;
+    if(comments.length > 0){
+      if(showCommentaries.style.visibility === 'visible'){
+        showCommentaries.setAttribute('style', 'display:none');
+      }else{
+        showCommentaries.setAttribute('style', 'visibility:visible');
+      }
+      await this.addUsersOfComments(comments, index);
+      this.chargedComments = true;
     }
-    this.addUsersOfComments(comments, index);
   }
 
-  addUsersOfComments(comments, index){
+  async addUsersOfComments(comments, index){
     //Si existe el campo username significa que ya se han buscado comentarios antes, y el campo comments del Post esta modificado (con los datos de usuarios y comentario añadidos)
     if(!comments[0].username){
       let userIds = [];
@@ -401,7 +408,7 @@ export class HomeComponent implements OnInit {
       }
 
       //Unimos los arrays de los comentarios y la info de los usuarios
-      this.getUsersById(userIds).then( users => {
+      await this.getUsersById(userIds).then( users => {
         let userOfComment = users.filter(u => comments.find(com => u._id === com.writer));
         let commentOfUser = comments.filter(com => users.find(u => u._id === com.writer));
         for(let u in userOfComment){

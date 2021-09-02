@@ -25,7 +25,10 @@ const userSchema = new Schema({
         receive: String,
         isReaded: Boolean
     }],
-    chats: [],
+    chats: [{
+        members: [],
+        typeChat: String
+    }],
     contacts: [],
     posts: [],
     views: [],

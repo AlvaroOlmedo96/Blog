@@ -25,7 +25,13 @@ body{
 }
 
 .small-text{
+    font-size: 11px;
+    font-weight: lighter !important;
+}
+
+.medium-text{
     font-size: 12px;
+    font-weight: lighter !important;
 }
 
 .drawMiddleStop{
@@ -66,7 +72,7 @@ body{
     border-radius: 50%;
     object-fit: cover;
 }
-.avatar-sm {
+.avatar-xs {
     vertical-align: middle;
     position: relative;
     width: 25px;
@@ -75,7 +81,15 @@ body{
     border-radius: 50%;
     object-fit: cover;
 }
-
+.avatar-sm {
+    vertical-align: middle;
+    position: relative;
+    width: 50px;
+    height: 50px;
+    overflow: hidden;
+    border-radius: 50%;
+    object-fit: cover;
+}
 .avatar-md {
     vertical-align: middle;
     position: relative;
@@ -105,7 +119,7 @@ body{
 }
 
 
-//LIKE ANIMATION
+//******LIKE & COMMENTS ICONS*******
 .heartIcon{
     font-size: 24px;
     cursor: pointer;
@@ -186,4 +200,49 @@ body{
 .commentBox{
     background-color: #dbdbdb; 
     border-radius: 0px 15px 15px 15px;
+}
+
+
+
+//******CUSTOM SCROLL BAR*******
+*::-webkit-scrollbar {
+    width: 8px;     /* Tamaño del scroll en vertical */
+    height: 8px;    /* Tamaño del scroll en horizontal */
+}
+*::-webkit-scrollbar-thumb {
+    background: rgb(49, 197, 255);
+    border-radius: 4px;
+}
+
+/* Cambiamos el fondo y agregamos una sombra cuando esté en hover */
+*::-webkit-scrollbar-thumb:hover {
+    background: #b3b3b3;
+    box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.2);
+}
+
+/* Cambiamos el fondo cuando esté en active */
+*::-webkit-scrollbar-thumb:active {
+    background-color: #999999;
+}
+*::-webkit-scrollbar-track {
+    background: #e1e1e1;
+    border-radius: 4px;
+}
+
+/* Cambiamos el fondo cuando esté en active o hover */
+*::-webkit-scrollbar-track:hover,
+*::-webkit-scrollbar-track:active {
+  background: #d4d4d4;
+}
+
+//******HOVER CONTACTS******
+.friend{
+    cursor: pointer;
+    padding: 5px;
+}
+.friend:hover{
+    background-color: rgb(0, 238, 255);
+    color: white;
+    border-radius: 30px;
+    transition: 0.25s ease-in-out;
 }

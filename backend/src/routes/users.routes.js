@@ -19,4 +19,7 @@ router.post('/acceptFriendRequest', authJwt.verifyToken, userCtrl.acceptFriendRe
 router.post('/declineFriendRequest', authJwt.verifyToken, userCtrl.declineFriendRequest);
 router.post('/getNotifications', authJwt.verifyToken, userCtrl.getNotificationsById);
 
+router.get('/getChat', authJwt.verifyToken, userCtrl.getChat);
+router.post('/sendMessage', authJwt.verifyToken, userCtrl.sendMessage);
+
 export default router;

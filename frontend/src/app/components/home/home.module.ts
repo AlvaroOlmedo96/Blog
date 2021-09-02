@@ -21,18 +21,21 @@ import {NgxImageCompressService} from 'ngx-image-compress';
 import { ImageCropperModule } from 'ngx-image-cropper';
 import { BlobImageService } from 'src/app/services/blobImages.service';
 import { NotificationsComponent } from './notifications/notifications.component';
+import { MessagesComponent } from './messages/messages.component';
 
 const routes: Routes =[
   { path: '', component: HomeComponent },
   { path: 'profile', component: ProfileComponent },
-  { path: 'notifications', component: NotificationsComponent }
+  { path: 'notifications', component: NotificationsComponent },
+  { path: 'messages', component: MessagesComponent }
 ];
 
 @NgModule({
   declarations: [
     HomeComponent,
     ProfileComponent,
-    NotificationsComponent
+    NotificationsComponent,
+    MessagesComponent
   ],
   imports: [
     RouterModule.forChild(routes),

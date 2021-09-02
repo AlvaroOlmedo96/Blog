@@ -1,5 +1,6 @@
 import User from '../models/User.model';
 import Notifications from '../models/Notifications.model';
+import Chats from '../models/Chats.model';
 import * as myJs from '../libs/myFunctions';
 import * as multer from '../middlewares/multer';
 import fs from 'fs';
@@ -48,7 +49,16 @@ export const getUsersById = async (req, res) => {
 export const getUserById = async (req, res) => {
     try {
         const users = await User.findById(req.query.userId);
-        res.json(users);
+        let userToSend = {
+            createdAt: users.createdAt,
+            email: users.email,
+            profileCoverImg: users.profileCoverImg,
+            profileImg: users.profileImg,
+            username: users.username,
+            notifications: users.notifications,
+            _id: users._id
+        }
+        res.json(userToSend);
     } catch (error) {
         res.status(500).json({msg: 'Server error'});
     }
@@ -211,6 +221,57 @@ export const updateReadedNotification = async (userId, notification) => {
         {$set: {"notifications.$[elem].isReaded": true} },
         {arrayFilters: [{"elem._id": notification._id} ], returnOriginal: false}, 
     );
+}
+
+export const getChat = async (req, res) => {
+    console.log("getChat", req.query);
+    const {chatId} = req.query;
+    let chat = await Chats.findById(chatId);
+    res.json({chat: chat});
+}
+
+export const sendMessage = async (req, res) => {
+    console.log(req.body);
+    const { chatRoomId, msg, emiterUserId, emiterUserName, receiverUserId, receiverUserName } = req.body;
+    let socketMessage = {};
+    //Comprobamos si el chat ya existe
+    if(chatRoomId != ''){
+        //Actualizamos mensajes en el Chat
+        const savedChat = await Chats.findByIdAndUpdate(chatRoomId, {$push:{messages: msg}}, {returnOriginal: false});
+        socketMessage = msg;
+        res.json({msg:"CHAT YA EXISTENTE", chat: savedChat});
+    }else{
+        //Creamos el chat
+        let chat = {
+            members: [emiterUserId, receiverUserId],
+            messages: [msg],
+            typeChat: 'private'
+        }
+        const newChat = new Chats(chat);
+        const savedChat = await newChat.save();
+        console.log("savedChat", savedChat);
+        let userChat = {
+            _id: savedChat._id,
+            members: savedChat.members,
+            typeChat: savedChat.typeChat
+        }
+        //Guardamos chat en los chats del emisor
+        await User.findByIdAndUpdate(emiterUserId, {$push:{chats: userChat}});
+        //Guardamos chat en los chats del receptor
+        await User.findByIdAndUpdate(receiverUserId, {$push:{chats: userChat}});
+
+        socketMessage = chat.messages[0];
+        res.json({msg:"CHAT NUEVO", chat: savedChat});
+    }
+    
+
+    //Enviamos mensaje por socket.io para tiempo real
+    let socketIdReceiver = socketIO.getUserById(receiverUserId);
+    //let socketIdEmiter = socketIO.getUserById(emiterUserId);
+    if(socketId != undefined && socketId != null && socketId != ''){//Si el usuario destinatario esta conectado se enviara la notificacion socket
+        socketIO.getIo().to(socketIdReceiver).emit('newMessage', socketMessage);
+        //socketIO.getIo().to(socketIdEmiter).emit('newMessage', socketMessage);
+    }
 }
 
 

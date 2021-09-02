@@ -138,4 +138,36 @@ export class UsersService {
     });
   }
 
+  async getChat(token, chatId){
+    const headerType = 'x-access-token';
+    const headers = {[headerType]: token};
+    const params = {
+      chatId: chatId
+    }
+    return await this.http.get(`${this.url}/api/users/getChat`, { params: params, headers: headers}).toPromise().then( (res:any) => {
+        return res;
+    }).catch( error => {
+        return error;
+    });
+  }
+
+  async sendMessage(token, chatRoomId, currentUser, receiverUser, msg){
+    const headerType = 'x-access-token';
+    const headers = {[headerType]: token};
+    const body = {
+      chatRoomId: chatRoomId,
+      msg: msg,
+      emiterUserId: currentUser._id,
+      emiterUserName: currentUser.username,
+      receiverUserId: receiverUser._id,
+      receiverUserName: receiverUser.username
+    }
+    //He usado metodo post porque get tiene limite de tamaño para los parametros enviados
+    return await this.http.post(`${this.url}/api/users/sendMessage`, body, { headers: headers}).toPromise().then( res => {
+        return res;
+    }).catch( error => {
+        return error;
+    });
+  }
+
 }

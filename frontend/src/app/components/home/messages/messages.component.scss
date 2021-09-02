@@ -1,0 +1,27 @@
+.commonHeight{
+    height: 80vh;
+}
+
+
+.message {
+    padding: 5px !important;
+    border-radius: 10px !important;
+    margin-bottom: 0px !important;
+    white-space: pre-wrap;
+}
+ 
+.my-message {
+    padding: 5px;
+    background: rgba(255, 222, 115, 0.466);
+    color: rgb(0, 0, 0);
+    margin: 0.2em;
+    border-radius: 15px 15px 0px 15px;
+}
+ 
+.other-message {
+    padding: 5px;
+    background: rgba(0, 204, 255, 0.356);
+    color: rgb(0, 0, 0);
+    margin:0.2em;
+    border-radius: 15px 15px 15px 0px;
+}

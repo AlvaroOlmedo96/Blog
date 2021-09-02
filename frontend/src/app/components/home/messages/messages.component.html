@@ -1,0 +1,89 @@
+<div class="container-fluid p-0 m-0 pt-5">
+    <div *ngIf="chargingData" class="text-center pt-5">
+        <div class="spinner-grow text-primary mt-5 m-3" role="status" *ngFor="let repeat of [].constructor(3)"></div>
+    </div>
+
+
+    <div class="row m-0 p-0 pt-5 justify-content-center appear" *ngIf="!chargingData">
+
+        <div class="d-none d-md-block col-md-10 col-lg-8 col-xl-6 card p-0">
+            <div class="row p-0 m-0">
+                <!--LIST MESSAGES-->
+                <div class="col-5 p-2 m-0 commonHeight" style="border-right: 1px solid rgb(194, 194, 194);">
+                    <!--Lista de Contatos-->
+                    <h5 class="col-12 m-0 p-2" style="background-color: rgb(235, 235, 235);">Contactos</h5>
+                    <div class="input-group mt-1 mb-3">
+                        <input type="text" class="form-control" placeholder="Busca un contacto..." aria-label="Username" aria-describedby="basic-addon1">
+                        <span class="input-group-text"><i class="fa fa-search" aria-hidden="true"></i></span>
+                    </div>
+                    <div class="col-12 p-0 overflow-auto" style="height: 13vh;">
+                        <div *ngFor="let contact of friendsList" class="col-12 friend" (click)="changeSelectedContact(contact)">
+                            <div class="row p-0 m-0 align-items-center">
+                                <div class="col-2 p-0 text-center">
+                                    <img *ngIf="contact.profileImg != ''" [src]="contact.profileImg" alt="{{contact.profileImg}}" class="avatar-xs img-fluid">
+                                    <img *ngIf="contact.profileImg == ''" src="../../../../assets/defaultProfile.png" alt="{{contact.profileImg}}" class="avatar-xs img-fluid">
+                                </div>
+                                <div class="col-10 p-0">
+                                    <h5 class="m-0">{{contact.username}}</h5>
+                                </div>
+                            </div>
+                            <hr class="m-1">
+                        </div>
+                    </div>
+                    <!--Lista de Chats abiertos-->
+                    <h5 class="col-12 mt-3 p-2" style="background-color: rgb(235, 235, 235);">Chats abiertos</h5>
+                    <div class="col-12 p-0 overflow-auto" style="height: 35vh;">
+                        <div *ngFor="let chat of chats" class="col-12 friend" (click)="changeSelectedContact(chat.userOfChat)">
+                            <div class="row p-0 m-0 align-items-center">
+                                <div class="col-2 p-0 text-center">
+                                    <img *ngIf="chat.userOfChat.profileImg != ''" [src]="chat.userOfChat.profileImg" alt="{{chat.userOfChat.profileImg}}" class="avatar-xs img-fluid">
+                                    <img *ngIf="chat.userOfChat.profileImg == ''" src="../../../../assets/defaultProfile.png" alt="{{chat.userOfChat.profileImg}}" class="avatar-xs img-fluid">
+                                </div>
+                                <div class="col-10 p-0">
+                                    <h5 class="m-0">{{chat.userOfChat.username}}</h5>
+                                </div>
+                            </div>
+                            <hr class="m-1">
+                        </div>
+                    </div>
+                </div>
+
+                <!--CHATBOX-->
+                <div class="col-7 p-2 m-0 commonHeight" style="position: relative;">
+                    <ng-container *ngIf="selectedUserForChat != ''">
+                        <div class="row align-items-center">
+                            <div class="col-2 p-0 text-center">
+                                <img *ngIf="selectedUserForChat.profileImg != ''" [src]="selectedUserForChat.profileImg" alt="{{selectedUserForChat.profileImg}}" class="avatar img-fluid">
+                                <img *ngIf="selectedUserForChat.profileImg == ''" src="../../../../assets/defaultProfile.png" alt="{{selectedUserForChat.profileImg}}" class="avatar img-fluid">
+                            </div>
+                            <div class="col-10">
+                                <h5>{{selectedUserForChat.username}}</h5>
+                            </div>
+                        </div>
+                        <hr class="col-11 m-1">
+                    </ng-container>
+
+                    <div class="col-12 p-0">
+                        <div class="overflow-auto" style="height: 65vh;">
+                            <div *ngFor="let msg of currentChatMessages; let last=last">
+                                <div [ngClass]="{ 'my-message':msg.emiterUserId == user._id, 'other-message':msg.emiterUserId != user._id }">
+                                    <h7>{{msg.emiterUsername}}</h7>
+                                    <p class="mb-1 medium-text">{{msg.msg}}</p>
+                                    <span class="text-right small-text">{{msg.createdAt | date: 'dd/MM/YY HH:mm'}}</span>
+                                </div>
+                                <div *ngIf="last" id="message">{{last ? scrollBottom() : ''}}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 input-group mt-1 mb-3" style="position: absolute; bottom: 0;">
+                        <input #message type="text" class="form-control" placeholder="Escribe un mensaje..." aria-label="Username" aria-describedby="basic-addon1">
+                        <span class="input-group-text" (click)="sendMessage(message)"><i class="fa fa-paper-plane" aria-hidden="true"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>

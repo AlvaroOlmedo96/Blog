@@ -48,7 +48,8 @@
             <div *ngIf="!listPost.length > 0" class="text-center">
                 <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
             </div>
-            <div class="pl-lg-5 pr-lg-5 p-0" *ngIf="listPost.length > 0">
+            <!--POSTS-->
+            <div class="pl-lg-5 pr-lg-5 p-0" *ngIf="listPost.length > 0" style="height: 70vh; overflow-y: scroll;">
                 <div class="card shadow mt-1 mb-1" *ngFor="let post of listPost; let i = index;" 
                 [style.background-color]="post.propietaryId == user._id ? '#ebf8ff' : 'white'">
                     <div class="row col-12 p-3 p-md-2 m-0 align-items-center">
@@ -98,24 +99,29 @@
                                     <textarea class="form-control rounded overflow-visible" [(ngModel)]="comment" rows="3" placeholder="Escribe un comentario..." id="floatingTextarea"></textarea>
                                 </div>
                                 <div class="col-12 text-right mt-2 p-0">
-                                    <button class="col-6 col-sm-4 p-0 btn btn-primary" (click)="sendComment(post, showCommentBox)">Enviar</button>
+                                    <button class="col-6 col-sm-4 p-0 btn btn-primary" (click)="sendComment(post, showCommentBox)" [disabled]="!comment.length && !comment.trim().length">Enviar</button>
                                 </div>
                             </div>
                             <!--LISTA DE COMENTARIOS-->
                             <div #showCommentaries style="display:none" class="appear mt-3">
-                                <div class="col-12 row mt-2 m-0 mb-2 p-0 p-0 justify-content-center" *ngFor="let commentUser of post.comments">
-                                    <div class="col-2 col-sm-1 col-md-2 col-xl-1 mr-xl-2 p-0 text-center">
-                                        <img *ngIf="commentUser.profileImg != ''" [src]="commentUser.profileImg" alt="{{commentUser.profileImg}}" class="avatar">
-                                        <img *ngIf="commentUser.profileImg == ''" src="../../../assets/defaultProfile.png" alt="../../../assets/defaultProfile.png" class="avatar">
-                                    </div>
-                                    <div class="col-10 col-sm-11 col-md-10 col-xl-9 p-2 commentBox">
-                                        <div class="row p-0 m-0">
-                                            <h6 class="col-12 p-0 small-text">{{commentUser.username}}</h6>
-                                            <span class="col-12 p-0" style="font-size: 14px;">{{commentUser.comment.comment}}</span>
-                                            <span class="col-12 p-0 small-text text-right m-0 mb-1">{{commentUser.comment.createdAt | date: 'dd/MM/YY HH:mm'}}</span>
+                                <div *ngIf="!chargedComments" class="text-center">
+                                    <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
+                                </div>
+                                <ng-container *ngIf="chargedComments">
+                                    <div class="col-12 row mt-2 m-0 mb-2 p-0 p-0 justify-content-center appear" *ngFor="let commentUser of post.comments">
+                                        <div class="col-2 col-sm-1 col-md-2 col-xl-1 mr-xl-2 p-0 text-center">
+                                            <img *ngIf="commentUser.profileImg != ''" [src]="commentUser.profileImg" alt="{{commentUser.profileImg}}" class="avatar">
+                                            <img *ngIf="commentUser.profileImg == ''" src="../../../assets/defaultProfile.png" alt="../../../assets/defaultProfile.png" class="avatar">
+                                        </div>
+                                        <div class="col-10 col-sm-11 col-md-10 col-xl-9 p-2 commentBox">
+                                            <div class="row p-0 m-0">
+                                                <h6 class="col-12 p-0 small-text">{{commentUser.username}}</h6>
+                                                <span class="col-12 p-0" style="font-size: 14px;">{{commentUser.comment.comment}}</span>
+                                                <span class="col-12 p-0 small-text text-right m-0 mb-1">{{commentUser.comment.createdAt | date: 'dd/MM/YY HH:mm'}}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                </ng-container>
                             </div>
                             
                         </h6>

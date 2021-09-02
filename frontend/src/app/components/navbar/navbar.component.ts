@@ -81,6 +81,7 @@ export class NavbarComponent implements OnInit {
       this.checkReadedNotifications();
       this.router.navigate(['/home/notifications'], {queryParams: params});
     }
+    if(ruta == 'messages'){this.router.navigate(['/home/messages']);}
     if(ruta == 'profile'){this.router.navigate(['/home/profile']);}
   }
 
